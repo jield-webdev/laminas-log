@@ -8,6 +8,6 @@ return RectorConfig::configure()
     ->withPreparedSets(codeQuality: true, codingStyle: true)
     ->withPhpSets()
     ->withPaths([
-                    __DIR__ . '/src',
-                ])
+        __DIR__ . '/src',
+    ])
     ->withRootFiles();

@@ -20,7 +20,7 @@ class Db implements FormatterInterface
      *
      * @var string
      */
-    protected $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
+    protected string $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
 
     /**
      * @see http://php.net/manual/en/function.date.php
@@ -48,7 +48,7 @@ class Db implements FormatterInterface
      * @param array $event event data
      * @return array
      */
-    public function format($event)
+    public function format($event): array
     {
         $format = $this->getDateTimeFormat();
         array_walk_recursive($event, function (&$value) use ($format) {
@@ -63,7 +63,7 @@ class Db implements FormatterInterface
     /**
      * {@inheritDoc}
      */
-    public function getDateTimeFormat()
+    public function getDateTimeFormat(): string
     {
         return $this->dateTimeFormat;
     }
@@ -71,7 +71,7 @@ class Db implements FormatterInterface
     /**
      * {@inheritDoc}
      */
-    public function setDateTimeFormat($dateTimeFormat)
+    public function setDateTimeFormat($dateTimeFormat): FormatterInterface|static
     {
         $this->dateTimeFormat = (string) $dateTimeFormat;
         return $this;

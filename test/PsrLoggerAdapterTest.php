@@ -20,33 +20,19 @@ use function array_map;
  */
 class PsrLoggerAdapterTest extends LoggerInterfaceTest
 {
-    private MockWriter $mockWriter;
-
     /** @var array */
-    protected $psrPriorityMap = [
-        LogLevel::EMERGENCY => Logger::EMERG,
-        LogLevel::ALERT     => Logger::ALERT,
-        LogLevel::CRITICAL  => Logger::CRIT,
-        LogLevel::ERROR     => Logger::ERR,
-        LogLevel::WARNING   => Logger::WARN,
-        LogLevel::NOTICE    => Logger::NOTICE,
-        LogLevel::INFO      => Logger::INFO,
-        LogLevel::DEBUG     => Logger::DEBUG,
-    ];
-
-    /**
-     * Provides logger for LoggerInterface compat tests
-     *
-     * @return PsrLoggerAdapter
-     */
-    public function getLogger()
-    {
-        $this->mockWriter = new MockWriter();
-        $logger           = new Logger();
-        $logger->addProcessor('psrplaceholder');
-        $logger->addWriter($this->mockWriter);
-        return new PsrLoggerAdapter($logger);
-    }
+    protected $psrPriorityMap
+        = [
+            LogLevel::EMERGENCY => Logger::EMERG,
+            LogLevel::ALERT     => Logger::ALERT,
+            LogLevel::CRITICAL  => Logger::CRIT,
+            LogLevel::ERROR     => Logger::ERR,
+            LogLevel::WARNING   => Logger::WARN,
+            LogLevel::NOTICE    => Logger::NOTICE,
+            LogLevel::INFO      => Logger::INFO,
+            LogLevel::DEBUG     => Logger::DEBUG,
+        ];
+    private MockWriter $mockWriter;
 
     /**
      * This must return the log messages in order.
@@ -66,11 +52,6 @@ class PsrLoggerAdapterTest extends LoggerInterfaceTest
         }, $this->mockWriter->events);
     }
 
-    protected function tearDown(): void
-    {
-        unset($this->mockWriter);
-    }
-
     /**
      * @covers ::__construct
      * @covers ::getLogger
@@ -81,6 +62,20 @@ class PsrLoggerAdapterTest extends LoggerInterfaceTest
 
         $adapter = new PsrLoggerAdapter($logger);
         $this->assertSame($logger, $adapter->getLogger());
+    }
+
+    /**
+     * Provides logger for LoggerInterface compat tests
+     *
+     * @return PsrLoggerAdapter
+     */
+    public function getLogger()
+    {
+        $this->mockWriter = new MockWriter();
+        $logger           = new Logger();
+        $logger->addProcessor('psrplaceholder');
+        $logger->addWriter($this->mockWriter);
+        return new PsrLoggerAdapter($logger);
     }
 
     /**
@@ -126,5 +121,10 @@ class PsrLoggerAdapterTest extends LoggerInterfaceTest
         $logger = $this->getLogger();
         $this->expectException(InvalidArgumentException::class);
         $logger->log('invalid level', 'Foo');
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->mockWriter);
     }
 }

@@ -15,8 +15,8 @@ use Traversable;
 use function array_key_exists;
 use function array_shift;
 use function func_get_args;
-use function get_class;
 use function is_array;
+use function is_iterable;
 use function is_numeric;
 use function is_object;
 use function is_scalar;
@@ -28,16 +28,16 @@ use const PHP_EOL;
 class Xml implements FormatterInterface
 {
     /** @var string Name of root element */
-    protected $rootElement;
+    protected mixed $rootElement;
 
     /** @var array Relates XML elements to log data field keys. */
-    protected $elementMap;
+    protected mixed $elementMap;
 
     /** @var string Encoding to use in XML */
-    protected $encoding;
+    protected string $encoding;
 
     /** @var Escaper instance */
-    protected $escaper;
+    protected Escaper $escaper;
 
     /**
      * Format specifier for DateTime objects in event data (default: ISO 8601)
@@ -46,7 +46,7 @@ class Xml implements FormatterInterface
      *
      * @var string
      */
-    protected $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
+    protected string $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
 
     /**
      * (the default encoding is UTF-8)
@@ -100,61 +100,12 @@ class Xml implements FormatterInterface
     }
 
     /**
-     * Get encoding
-     *
-     * @return string
-     */
-    public function getEncoding()
-    {
-        return $this->encoding;
-    }
-
-    /**
-     * Set encoding
-     *
-     * @param string $value
-     * @return Xml
-     */
-    public function setEncoding($value)
-    {
-        $this->encoding = (string) $value;
-        return $this;
-    }
-
-    /**
-     * Set Escaper instance
-     *
-     * @return Xml
-     */
-    public function setEscaper(Escaper $escaper)
-    {
-        $this->escaper = $escaper;
-        return $this;
-    }
-
-    /**
-     * Get Escaper instance
-     *
-     * Lazy-loads an instance with the current encoding if none registered.
-     *
-     * @return Escaper
-     */
-    public function getEscaper()
-    {
-        if (null === $this->escaper) {
-            $this->setEscaper(new Escaper($this->getEncoding()));
-        }
-
-        return $this->escaper;
-    }
-
-    /**
      * Formats data into a single line to be written by the writer.
      *
      * @param array $event event data
      * @return string formatted line to write to the log
      */
-    public function format($event)
+    public function format($event): string
     {
         if (isset($event['timestamp']) && $event['timestamp'] instanceof DateTime) {
             $event['timestamp'] = $event['timestamp']->format($this->getDateTimeFormat());
@@ -204,6 +155,68 @@ class Xml implements FormatterInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getDateTimeFormat(): string
+    {
+        return $this->dateTimeFormat;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setDateTimeFormat($dateTimeFormat): FormatterInterface|static
+    {
+        $this->dateTimeFormat = (string) $dateTimeFormat;
+        return $this;
+    }
+
+    /**
+     * Get encoding
+     */
+    public function getEncoding(): string
+    {
+        return $this->encoding;
+    }
+
+    /**
+     * Set encoding
+     *
+     * @param string $value
+     * @return Xml
+     */
+    public function setEncoding($value): static
+    {
+        $this->encoding = (string) $value;
+        return $this;
+    }
+
+    /**
+     * Get Escaper instance
+     *
+     * Lazy-loads an instance with the current encoding if none registered.
+     */
+    public function getEscaper(): Escaper
+    {
+        if (null === $this->escaper) {
+            $this->setEscaper(new Escaper($this->getEncoding()));
+        }
+
+        return $this->escaper;
+    }
+
+    /**
+     * Set Escaper instance
+     *
+     * @return Xml
+     */
+    public function setEscaper(Escaper $escaper): static
+    {
+        $this->escaper = $escaper;
+        return $this;
+    }
+
+    /**
      * Recursion function to create an xml tree structure out of array structure
      *
      * @param DOMDocument $doc - DOMDocument where the current nodes will be generated
@@ -211,9 +224,9 @@ class Xml implements FormatterInterface
      * @param array|Traversable $mixedData - mixed data
      * @return DOMElement $domElement - DOM Element with appended child nodes
      */
-    protected function buildElementTree(DOMDocument $doc, DOMElement $rootElement, $mixedData)
+    protected function buildElementTree(DOMDocument $doc, DOMElement $rootElement, $mixedData): DOMElement
     {
-        if (!is_array($mixedData) && !$mixedData instanceof Traversable) {
+        if (! is_array($mixedData) && ! $mixedData instanceof Traversable) {
             return $rootElement;
         }
 
@@ -254,22 +267,5 @@ class Xml implements FormatterInterface
         }
 
         return $rootElement;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDateTimeFormat()
-    {
-        return $this->dateTimeFormat;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setDateTimeFormat($dateTimeFormat)
-    {
-        $this->dateTimeFormat = (string) $dateTimeFormat;
-        return $this;
     }
 }

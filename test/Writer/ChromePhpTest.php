@@ -17,11 +17,6 @@ class ChromePhpTest extends TestCase
 {
     protected $chromephp;
 
-    protected function setUp(): void
-    {
-        $this->chromephp = new MockChromePhp();
-    }
-
     public function testGetChromePhp(): void
     {
         $writer = new ChromePhp($this->chromephp);
@@ -80,5 +75,10 @@ class ChromePhpTest extends TestCase
 
         $this->assertCount(1, $filters);
         $this->assertEquals($filter, $filters[0]);
+    }
+
+    protected function setUp(): void
+    {
+        $this->chromephp = new MockChromePhp();
     }
 }

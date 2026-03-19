@@ -11,10 +11,8 @@ interface LoggerAwareInterface
 {
     /**
      * Set logger instance
-     *
-     * @return void
      */
-    public function setLogger(LoggerInterface $logger);
+    public function setLogger(LoggerInterface $logger): void;
 
     /**
      * Get logger instance. Currently commented out as this would possibly break

@@ -46,7 +46,7 @@ retrieve the default DateTime format by using the
 
 ## Formatting to JSON
 
-`Laminas\Log\Formatter\Json` is the JSON formatter.  By default, it
+`Laminas\Log\Formatter\Json` is the JSON formatter. By default, it
 automatically logs all items as JSON:
 
 ```php

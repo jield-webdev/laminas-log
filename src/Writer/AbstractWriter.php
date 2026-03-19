@@ -12,16 +12,11 @@ use Laminas\Log\FormatterPluginManager as LogFormatterPluginManager;
 use Laminas\ServiceManager\ServiceManager;
 use Laminas\Stdlib\ErrorHandler;
 use Traversable;
-
-use function get_class;
-use function gettype;
 use function is_array;
 use function is_int;
-use function is_object;
 use function is_string;
 use function iterator_to_array;
 use function sprintf;
-
 use const E_WARNING;
 
 /**
@@ -34,44 +29,44 @@ abstract class AbstractWriter implements WriterInterface
     /**
      * Filter plugins
      *
-     * @var FilterPluginManager
+     * @var LogFilterPluginManager|null
      */
-    protected $filterPlugins;
+    protected ?LogFilterPluginManager $filterPlugins = null;
 
     /**
      * Formatter plugins
      *
-     * @var FormatterPluginManager
+     * @var LogFormatterPluginManager|null
      */
-    protected $formatterPlugins;
+    protected ?LogFormatterPluginManager $formatterPlugins = null;
 
     /**
      * Filter chain
      *
      * @var Filter\FilterInterface[]
      */
-    protected $filters = [];
+    protected array $filters = [];
 
     /**
      * Formats the log message before writing
      *
-     * @var Formatter\FormatterInterface
+     * @var Formatter\FormatterInterface|null
      */
-    protected $formatter;
+    protected ?Formatter\FormatterInterface $formatter;
 
     /**
      * Use Laminas\Stdlib\ErrorHandler to report errors during calls to write
      *
      * @var bool
      */
-    protected $convertWriteErrorsToExceptions = true;
+    protected bool $convertWriteErrorsToExceptions = true;
 
     /**
      * Error level passed to Laminas\Stdlib\ErrorHandler::start for errors reported during calls to write
      *
-     * @var bool
+     * @var int
      */
-    protected $errorsToExceptionsConversionLevel = E_WARNING;
+    protected int $errorsToExceptionsConversionLevel = E_WARNING;
 
     /**
      * Constructor
@@ -80,7 +75,7 @@ abstract class AbstractWriter implements WriterInterface
      * - filters: array of filters to add to this filter
      * - formatter: formatter for this writer
      *
-     * @param  array|Traversable $options
+     * @param array|Traversable $options
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($options = null)
@@ -107,7 +102,7 @@ abstract class AbstractWriter implements WriterInterface
                         if (is_int($filter) || is_string($filter) || $filter instanceof Filter\FilterInterface) {
                             $this->addFilter($filter);
                         } elseif (is_array($filter)) {
-                            if (! isset($filter['name'])) {
+                            if (!isset($filter['name'])) {
                                 throw new Exception\InvalidArgumentException(
                                     'Options must contain a name for the filter'
                                 );
@@ -125,7 +120,7 @@ abstract class AbstractWriter implements WriterInterface
                 if (is_string($formatter) || $formatter instanceof Formatter\FormatterInterface) {
                     $this->setFormatter($formatter);
                 } elseif (is_array($formatter)) {
-                    if (! isset($formatter['name'])) {
+                    if (!isset($formatter['name'])) {
                         throw new Exception\InvalidArgumentException('Options must contain a name for the formatter');
                     }
 
@@ -137,63 +132,19 @@ abstract class AbstractWriter implements WriterInterface
     }
 
     /**
-     * Add a filter specific to this writer.
-     *
-     * @param  int|string|Filter\FilterInterface $filter
-     * @param  array|null $options
-     * @return AbstractWriter
-     * @throws Exception\InvalidArgumentException
-     */
-    public function addFilter($filter, ?array $options = null)
-    {
-        if (is_int($filter)) {
-            $filter = new Filter\Priority($filter);
-        }
-
-        if (is_string($filter)) {
-            $filter = $this->filterPlugin($filter, $options);
-        }
-
-        if (! $filter instanceof Filter\FilterInterface) {
-            throw new Exception\InvalidArgumentException(sprintf(
-                'Filter must implement %s\Filter\FilterInterface; received "%s"',
-                __NAMESPACE__,
-                get_debug_type($filter)
-            ));
-        }
-
-        $this->filters[] = $filter;
-        return $this;
-    }
-
-    /**
-     * Get filter plugin manager
-     *
-     * @return LogFilterPluginManager
-     */
-    public function getFilterPluginManager()
-    {
-        if (null === $this->filterPlugins) {
-            $this->setFilterPluginManager(new LogFilterPluginManager(new ServiceManager()));
-        }
-
-        return $this->filterPlugins;
-    }
-
-    /**
      * Set filter plugin manager
      *
-     * @param  string|LogFilterPluginManager $plugins
+     * @param string|LogFilterPluginManager $plugins
      * @return self
      * @throws Exception\InvalidArgumentException
      */
-    public function setFilterPluginManager($plugins)
+    public function setFilterPluginManager($plugins): static
     {
         if (is_string($plugins)) {
             $plugins = new $plugins();
         }
 
-        if (! $plugins instanceof LogFilterPluginManager) {
+        if (!$plugins instanceof LogFilterPluginManager) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Writer plugin manager must extend %s; received %s',
                 LogFilterPluginManager::class,
@@ -206,45 +157,19 @@ abstract class AbstractWriter implements WriterInterface
     }
 
     /**
-     * Get filter instance
-     *
-     * @param string $name
-     * @param array|null $options
-     * @return Filter\FilterInterface
-     */
-    public function filterPlugin($name, ?array $options = null)
-    {
-        return $this->getFilterPluginManager()->get($name, $options);
-    }
-
-    /**
-     * Get formatter plugin manager
-     *
-     * @return LogFormatterPluginManager
-     */
-    public function getFormatterPluginManager()
-    {
-        if (null === $this->formatterPlugins) {
-            $this->setFormatterPluginManager(new LogFormatterPluginManager(new ServiceManager()));
-        }
-
-        return $this->formatterPlugins;
-    }
-
-    /**
      * Set formatter plugin manager
      *
-     * @param  string|LogFormatterPluginManager $plugins
+     * @param string|LogFormatterPluginManager $plugins
      * @return self
      * @throws Exception\InvalidArgumentException
      */
-    public function setFormatterPluginManager($plugins)
+    public function setFormatterPluginManager($plugins): static
     {
         if (is_string($plugins)) {
             $plugins = new $plugins();
         }
 
-        if (! $plugins instanceof LogFormatterPluginManager) {
+        if (!$plugins instanceof LogFormatterPluginManager) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'Writer plugin manager must extend %s; received %s',
@@ -259,34 +184,104 @@ abstract class AbstractWriter implements WriterInterface
     }
 
     /**
+     * Add a filter specific to this writer.
+     *
+     * @param int|string|Filter\FilterInterface $filter
+     * @param array|null $options
+     * @return AbstractWriter
+     * @throws Exception\InvalidArgumentException
+     */
+    public function addFilter($filter, ?array $options = null): static
+    {
+        if (is_int($filter)) {
+            $filter = new Filter\Priority($filter);
+        }
+
+        if (is_string($filter)) {
+            $filter = $this->filterPlugin($filter, $options);
+        }
+
+        if (!$filter instanceof Filter\FilterInterface) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Filter must implement %s\Filter\FilterInterface; received "%s"',
+                __NAMESPACE__,
+                get_debug_type($filter)
+            ));
+        }
+
+        $this->filters[] = $filter;
+        return $this;
+    }
+
+    /**
+     * Get filter instance
+     *
+     * @param string $name
+     * @param array|null $options
+     * @return Filter\FilterInterface
+     */
+    public function filterPlugin($name, ?array $options = null): Filter\FilterInterface
+    {
+        return $this->getFilterPluginManager()->get($name, $options);
+    }
+
+    /**
+     * Get filter plugin manager
+     *
+     * @return LogFilterPluginManager
+     */
+    public function getFilterPluginManager(): ?LogFilterPluginManager
+    {
+        if (!$this->filterPlugins instanceof \Laminas\Log\FilterPluginManager) {
+            $this->setFilterPluginManager(new LogFilterPluginManager(new ServiceManager()));
+        }
+
+        return $this->filterPlugins;
+    }
+
+    /**
      * Get formatter instance
      *
      * @param string $name
      * @param array|null $options
      * @return Formatter\FormatterInterface
      */
-    public function formatterPlugin($name, ?array $options = null)
+    public function formatterPlugin($name, ?array $options = null): Formatter\FormatterInterface
     {
         return $this->getFormatterPluginManager()->get($name, $options);
+    }
+
+    /**
+     * Get formatter plugin manager
+     *
+     * @return LogFormatterPluginManager
+     */
+    public function getFormatterPluginManager(): ?LogFormatterPluginManager
+    {
+        if (!$this->formatterPlugins instanceof \Laminas\Log\FormatterPluginManager) {
+            $this->setFormatterPluginManager(new LogFormatterPluginManager(new ServiceManager()));
+        }
+
+        return $this->formatterPlugins;
     }
 
     /**
      * Log a message to this writer.
      *
      * @param array $event log data event
-     * @return void
+     * @return WriterInterface
      */
-    public function write(array $event)
+    public function write(array $event): WriterInterface
     {
         foreach ($this->filters as $filter) {
-            if (! $filter->filter($event)) {
-                return;
+            if (!$filter->filter($event)) {
+                return $this;
             }
         }
 
         $errorHandlerStarted = false;
 
-        if ($this->convertWriteErrorsToExceptions && ! ErrorHandler::started()) {
+        if ($this->convertWriteErrorsToExceptions && !ErrorHandler::started()) {
             ErrorHandler::start($this->errorsToExceptionsConversionLevel);
             $errorHandlerStarted = true;
         }
@@ -307,60 +302,24 @@ abstract class AbstractWriter implements WriterInterface
                 throw new Exception\RuntimeException("Unable to write", 0, $error);
             }
         }
-    }
 
-    /**
-     * Set a new formatter for this writer
-     *
-     * @param  string|Formatter\FormatterInterface $formatter
-     * @param  array|null $options
-     * @return self
-     * @throws Exception\InvalidArgumentException
-     */
-    public function setFormatter($formatter, ?array $options = null)
-    {
-        if (is_string($formatter)) {
-            $formatter = $this->formatterPlugin($formatter, $options);
-        }
-
-        if (! $formatter instanceof Formatter\FormatterInterface) {
-            throw new Exception\InvalidArgumentException(sprintf(
-                'Formatter must implement %s\Formatter\FormatterInterface; received "%s"',
-                __NAMESPACE__,
-                get_debug_type($formatter)
-            ));
-        }
-
-        $this->formatter = $formatter;
         return $this;
     }
 
     /**
-     * Get formatter
+     * Write a message to the log
      *
-     * @return Formatter\FormatterInterface
+     * @param array $event log data event
+     * @return void
      */
-    protected function getFormatter()
-    {
-        return $this->formatter;
-    }
-
-    /**
-     * Check if the writer has a formatter
-     *
-     * @return bool
-     */
-    protected function hasFormatter()
-    {
-        return $this->formatter instanceof Formatter\FormatterInterface;
-    }
+    abstract protected function doWrite(array $event): void;
 
     /**
      * Set convert write errors to exception flag
      *
      * @param bool $convertErrors
      */
-    public function setConvertWriteErrorsToExceptions($convertErrors)
+    public function setConvertWriteErrorsToExceptions($convertErrors): void
     {
         $this->convertWriteErrorsToExceptions = $convertErrors;
     }
@@ -375,10 +334,48 @@ abstract class AbstractWriter implements WriterInterface
     }
 
     /**
-     * Write a message to the log
+     * Get formatter
      *
-     * @param array $event log data event
-     * @return void
+     * @return Formatter\FormatterInterface
      */
-    abstract protected function doWrite(array $event);
+    protected function getFormatter(): ?Formatter\FormatterInterface
+    {
+        return $this->formatter;
+    }
+
+    /**
+     * Set a new formatter for this writer
+     *
+     * @param string|Formatter\FormatterInterface $formatter
+     * @param array|null $options
+     * @return self
+     * @throws Exception\InvalidArgumentException
+     */
+    public function setFormatter($formatter, ?array $options = null): static
+    {
+        if (is_string($formatter)) {
+            $formatter = $this->formatterPlugin($formatter, $options);
+        }
+
+        if (!$formatter instanceof Formatter\FormatterInterface) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Formatter must implement %s\Formatter\FormatterInterface; received "%s"',
+                __NAMESPACE__,
+                get_debug_type($formatter)
+            ));
+        }
+
+        $this->formatter = $formatter;
+        return $this;
+    }
+
+    /**
+     * Check if the writer has a formatter
+     *
+     * @return bool
+     */
+    protected function hasFormatter(): bool
+    {
+        return $this->formatter instanceof Formatter\FormatterInterface;
+    }
 }

@@ -46,7 +46,8 @@ $writer->setLogger($psrLogger);
 
 ## PSR-3 placeholder processor
 
-`Laminas\Log\Processor\PsrPlaceholder` adds support for [PSR-3 message placeholders](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md#12-message).
+`Laminas\Log\Processor\PsrPlaceholder` adds support
+for [PSR-3 message placeholders](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md#12-message).
 Placeholder names correspond to keys in the "extra" array passed when logging
 a message.
 

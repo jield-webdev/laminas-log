@@ -24,7 +24,7 @@ class PsrPlaceholder implements ProcessorInterface
      */
     public function process(array $event): array
     {
-        if (!str_contains((string)$event['message'], '{')) {
+        if (! str_contains((string) $event['message'], '{')) {
             return $event;
         }
 

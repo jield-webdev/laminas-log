@@ -11,11 +11,6 @@ class BacktraceTest extends TestCase
 {
     private $processor;
 
-    protected function setUp(): void
-    {
-        $this->processor = new Backtrace();
-    }
-
     public function testProcess(): void
     {
         $event = [
@@ -40,5 +35,10 @@ class BacktraceTest extends TestCase
 
         $processor = new Backtrace(['ignoredNamespaces' => ['Foo\\Bar']]);
         $this->assertSame(['Laminas\\Log', 'Foo\\Bar'], $processor->getIgnoredNamespaces());
+    }
+
+    protected function setUp(): void
+    {
+        $this->processor = new Backtrace();
     }
 }

@@ -11,56 +11,55 @@ interface LoggerInterface
     /**
      * @param string $message
      * @param array|Traversable $extra
-     * @return LoggerInterface
      */
-    public function emerg($message, $extra = []);
+    public function emerg($message, $extra = []): LoggerInterface;
 
     /**
      * @param string $message
      * @param array|Traversable $extra
-     * @return LoggerInterface
      */
-    public function alert($message, $extra = []);
+    public function alert($message, $extra = []): LoggerInterface;
 
     /**
      * @param string $message
      * @param array|Traversable $extra
-     * @return LoggerInterface
      */
-    public function crit($message, $extra = []);
+    public function crit($message, $extra = []): LoggerInterface;
 
     /**
      * @param string $message
      * @param array|Traversable $extra
-     * @return LoggerInterface
      */
-    public function err($message, $extra = []);
+    public function err($message, $extra = []): LoggerInterface;
 
     /**
      * @param string $message
      * @param array|Traversable $extra
-     * @return LoggerInterface
      */
-    public function warn($message, $extra = []);
+    public function warn($message, $extra = []): LoggerInterface;
 
     /**
      * @param string $message
      * @param array|Traversable $extra
-     * @return LoggerInterface
      */
-    public function notice($message, $extra = []);
+    public function notice($message, $extra = []): LoggerInterface;
 
     /**
      * @param string $message
      * @param array|Traversable $extra
-     * @return LoggerInterface
      */
-    public function info($message, $extra = []);
+    public function info($message, $extra = []): LoggerInterface;
 
     /**
      * @param string $message
      * @param array|Traversable $extra
-     * @return LoggerInterface
      */
-    public function debug($message, $extra = []);
+    public function debug($message, $extra = []): LoggerInterface;
+
+    /**
+     * @param int $priority
+     * @param string $message
+     * @param array|Traversable $extra
+     */
+    public function log($priority, $message, $extra = []): LoggerInterface;
 }

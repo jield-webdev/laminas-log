@@ -19,21 +19,6 @@ class WriterPluginManagerCompatibilityTest extends TestCase
     use CommonPluginManagerTrait;
     use ServicesNotSharedByDefaultTrait;
 
-    protected static function getPluginManager(): AbstractPluginManager
-    {
-        return new WriterPluginManager(new ServiceManager());
-    }
-
-    protected function getV2InvalidPluginException()
-    {
-        return InvalidArgumentException::class;
-    }
-
-    protected function getInstanceOf()
-    {
-        return Writer\WriterInterface::class;
-    }
-
     /**
      * Overrides CommonPluginManagerTrait::aliasProvider
      *
@@ -68,5 +53,20 @@ class WriterPluginManagerCompatibilityTest extends TestCase
                     yield $alias => [$alias, $target];
             }
         }
+    }
+
+    protected static function getPluginManager(): AbstractPluginManager
+    {
+        return new WriterPluginManager(new ServiceManager());
+    }
+
+    protected function getV2InvalidPluginException()
+    {
+        return InvalidArgumentException::class;
+    }
+
+    protected function getInstanceOf()
+    {
+        return Writer\WriterInterface::class;
     }
 }

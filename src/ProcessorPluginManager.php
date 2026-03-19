@@ -7,10 +7,9 @@ namespace Laminas\Log;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use Override;
 
-use function get_class;
-use function gettype;
-use function is_object;
+use function get_debug_type;
 use function sprintf;
 
 /**
@@ -18,77 +17,30 @@ use function sprintf;
  */
 class ProcessorPluginManager extends AbstractPluginManager
 {
-    protected $aliases = [
-        'backtrace'      => Processor\Backtrace::class,
-        'psrplaceholder' => Processor\PsrPlaceholder::class,
-        'referenceid'    => Processor\ReferenceId::class,
-        'requestid'      => Processor\RequestId::class,
+    protected $aliases
+        = [
+            'backtrace'      => Processor\Backtrace::class,
+            'psrplaceholder' => Processor\PsrPlaceholder::class,
+            'referenceid'    => Processor\ReferenceId::class,
+            'requestid'      => Processor\RequestId::class,
+        ];
 
-        // Legacy Zend Framework aliases
-        //phpcs:disable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
-        \Zend\Log\Processor\Backtrace::class      => Processor\Backtrace::class,
-        \Zend\Log\Processor\PsrPlaceholder::class => Processor\PsrPlaceholder::class,
-        \Zend\Log\Processor\ReferenceId::class    => Processor\ReferenceId::class,
-        \Zend\Log\Processor\RequestId::class      => Processor\RequestId::class,
-        //phpcs:enable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
-
-        // v2 normalized FQCNs
-        'zendlogprocessorbacktrace'      => Processor\Backtrace::class,
-        'zendlogprocessorpsrplaceholder' => Processor\PsrPlaceholder::class,
-        'zendlogprocessorreferenceid'    => Processor\ReferenceId::class,
-        'zendlogprocessorrequestid'      => Processor\RequestId::class,
-    ];
-
-    protected $factories = [
-        Processor\Backtrace::class      => InvokableFactory::class,
-        Processor\PsrPlaceholder::class => InvokableFactory::class,
-        Processor\ReferenceId::class    => InvokableFactory::class,
-        Processor\RequestId::class      => InvokableFactory::class,
-        // Legacy (v2) due to alias resolution; canonical form of resolved
-        // alias is used to look up the factory, while the non-normalized
-        // resolved alias is used as the requested name passed to the factory.
-        'laminaslogprocessorbacktrace'      => InvokableFactory::class,
-        'laminaslogprocessorpsrplaceholder' => InvokableFactory::class,
-        'laminaslogprocessorreferenceid'    => InvokableFactory::class,
-        'laminaslogprocessorrequestid'      => InvokableFactory::class,
-    ];
+    protected $factories
+        = [
+            Processor\Backtrace::class      => InvokableFactory::class,
+            Processor\PsrPlaceholder::class => InvokableFactory::class,
+            Processor\ReferenceId::class    => InvokableFactory::class,
+            Processor\RequestId::class      => InvokableFactory::class,
+        ];
 
     protected $instanceOf = Processor\ProcessorInterface::class;
 
     /**
-     * Allow many processors of the same type (v2)
-     *
-     * @param bool
-     */
-    protected $shareByDefault = false;
-
-    /**
      * Allow many processors of the same type (v3)
      *
-     * @param bool
+     * @var bool
      */
     protected $sharedByDefault = false;
-
-    /**
-     * Validate the plugin is of the expected type (v3).
-     *
-     * Validates against `$instanceOf`.
-     *
-     * @param mixed $instance
-     * @throws InvalidServiceException
-     */
-    #[\Override]
-    public function validate($instance)
-    {
-        if (! $instance instanceof $this->instanceOf) {
-            throw new InvalidServiceException(sprintf(
-                '%s can only create instances of %s; %s is invalid',
-                static::class,
-                $this->instanceOf,
-                get_debug_type($instance)
-            ));
-        }
-    }
 
     /**
      * Validate the plugin is of the expected type (v2).
@@ -98,7 +50,7 @@ class ProcessorPluginManager extends AbstractPluginManager
      * @param mixed $plugin
      * @throws InvalidServiceException
      */
-    public function validatePlugin($plugin)
+    public function validatePlugin($plugin): void
     {
         try {
             $this->validate($plugin);
@@ -107,6 +59,27 @@ class ProcessorPluginManager extends AbstractPluginManager
                 'Plugin of type %s is invalid; must implement %s\Processor\ProcessorInterface',
                 get_debug_type($plugin),
                 __NAMESPACE__
+            ));
+        }
+    }
+
+    /**
+     * Validate the plugin is of the expected type (v3).
+     *
+     * Validates against `$instanceOf`.
+     *
+     * @param mixed $instance
+     * @throws InvalidServiceException
+     */
+    #[Override]
+    public function validate($instance): void
+    {
+        if (! $instance instanceof $this->instanceOf) {
+            throw new InvalidServiceException(sprintf(
+                '%s can only create instances of %s; %s is invalid',
+                static::class,
+                $this->instanceOf,
+                get_debug_type($instance)
             ));
         }
     }

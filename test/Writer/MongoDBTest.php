@@ -30,29 +30,6 @@ class MongoDBTest extends TestCase
     /** @var string */
     protected $collection;
 
-    protected function setUp(): void
-    {
-        if (! extension_loaded('mongodb')) {
-            $this->markTestSkipped('The mongodb PHP extension is not available');
-        }
-
-        $this->database   = 'laminas_test';
-        $this->collection = 'logs';
-
-        $this->manager = new Manager(sprintf(
-            'mongodb://%s:%s',
-            getenv('TESTS_LAMINAS_LOG_MONGODB_HOST'),
-            getenv('TESTS_LAMINAS_LOG_MONGODB_PORT')
-        ));
-    }
-
-    protected function tearDown(): void
-    {
-        if (extension_loaded('mongodb')) {
-            $this->manager->executeCommand($this->database, new Command(['dropDatabase' => 1]));
-        }
-    }
-
     public function testFormattingIsNotSupported(): void
     {
         $writer = new MongoDBWriter($this->manager, $this->database, $this->collection);
@@ -145,6 +122,29 @@ class MongoDBTest extends TestCase
         foreach ($cursor as $entry) {
             $this->assertInstanceOf(UTCDateTime::class, $entry->timestamp);
             $this->assertEquals($date->format('c'), $entry->timestamp->toDateTime()->format('c'));
+        }
+    }
+
+    protected function setUp(): void
+    {
+        if (! extension_loaded('mongodb')) {
+            $this->markTestSkipped('The mongodb PHP extension is not available');
+        }
+
+        $this->database   = 'laminas_test';
+        $this->collection = 'logs';
+
+        $this->manager = new Manager(sprintf(
+            'mongodb://%s:%s',
+            getenv('TESTS_LAMINAS_LOG_MONGODB_HOST'),
+            getenv('TESTS_LAMINAS_LOG_MONGODB_PORT')
+        ));
+    }
+
+    protected function tearDown(): void
+    {
+        if (extension_loaded('mongodb')) {
+            $this->manager->executeCommand($this->database, new Command(['dropDatabase' => 1]));
         }
     }
 }

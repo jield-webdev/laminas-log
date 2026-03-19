@@ -6,5 +6,5 @@ namespace LaminasTest\Log\TestAsset;
 
 class NotStringObject
 {
-   // This object has no __toString method
+    // This object has no __toString method
 }

@@ -7,91 +7,40 @@ namespace Laminas\Log;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use Override;
 
-use function get_class;
-use function gettype;
-use function is_object;
+use function get_debug_type;
 use function sprintf;
 
 class FilterPluginManager extends AbstractPluginManager
 {
-    protected $aliases = [
-        'mock'           => Filter\Mock::class,
-        'priority'       => Filter\Priority::class,
-        'regex'          => Filter\Regex::class,
-        'suppress'       => Filter\SuppressFilter::class,
-        'suppressfilter' => Filter\SuppressFilter::class,
-        'validator'      => Filter\Validator::class,
+    protected $aliases
+        = [
+            'mock'           => Filter\Mock::class,
+            'priority'       => Filter\Priority::class,
+            'regex'          => Filter\Regex::class,
+            'suppress'       => Filter\SuppressFilter::class,
+            'suppressfilter' => Filter\SuppressFilter::class,
+            'validator'      => Filter\Validator::class,
+        ];
 
-        // Legacy Zend Framework aliases
-        //phpcs:disable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
-        \Zend\Log\Filter\Mock::class           => Filter\Mock::class,
-        \Zend\Log\Filter\Priority::class       => Filter\Priority::class,
-        \Zend\Log\Filter\Regex::class          => Filter\Regex::class,
-        \Zend\Log\Filter\SuppressFilter::class => Filter\SuppressFilter::class,
-        \Zend\Log\Filter\Validator::class      => Filter\Validator::class,
-        //phpcs:enable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
-
-        // v2 normalized FQCNs
-        'zendlogfiltermock'           => Filter\Mock::class,
-        'zendlogfilterpriority'       => Filter\Priority::class,
-        'zendlogfilterregex'          => Filter\Regex::class,
-        'zendlogfiltersuppressfilter' => Filter\SuppressFilter::class,
-        'zendlogfiltervalidator'      => Filter\Validator::class,
-    ];
-
-    protected $factories = [
-        Filter\Mock::class           => InvokableFactory::class,
-        Filter\Priority::class       => InvokableFactory::class,
-        Filter\Regex::class          => InvokableFactory::class,
-        Filter\SuppressFilter::class => InvokableFactory::class,
-        Filter\Validator::class      => InvokableFactory::class,
-        // Legacy (v2) due to alias resolution; canonical form of resolved
-        // alias is used to look up the factory, while the non-normalized
-        // resolved alias is used as the requested name passed to the factory.
-        'laminaslogfiltermock'           => InvokableFactory::class,
-        'laminaslogfilterpriority'       => InvokableFactory::class,
-        'laminaslogfilterregex'          => InvokableFactory::class,
-        'laminaslogfiltersuppressfilter' => InvokableFactory::class,
-        'laminaslogfiltervalidator'      => InvokableFactory::class,
-    ];
+    protected $factories
+        = [
+            Filter\Mock::class           => InvokableFactory::class,
+            Filter\Priority::class       => InvokableFactory::class,
+            Filter\Regex::class          => InvokableFactory::class,
+            Filter\SuppressFilter::class => InvokableFactory::class,
+            Filter\Validator::class      => InvokableFactory::class,
+        ];
 
     protected $instanceOf = Filter\FilterInterface::class;
 
     /**
-     * Allow many filters of the same type (v2)
-     *
-     * @param bool
-     */
-    protected $shareByDefault = false;
-
-    /**
      * Allow many filters of the same type (v3)
      *
-     * @param bool
+     * @var bool
      */
     protected $sharedByDefault = false;
-
-    /**
-     * Validate the plugin is of the expected type (v3).
-     *
-     * Validates against `$instanceOf`.
-     *
-     * @param mixed $instance
-     * @throws InvalidServiceException
-     */
-    #[\Override]
-    public function validate($instance)
-    {
-        if (! $instance instanceof $this->instanceOf) {
-            throw new InvalidServiceException(sprintf(
-                '%s can only create instances of %s; %s is invalid',
-                static::class,
-                $this->instanceOf,
-                get_debug_type($instance)
-            ));
-        }
-    }
 
     /**
      * Validate the plugin is of the expected type (v2).
@@ -101,7 +50,7 @@ class FilterPluginManager extends AbstractPluginManager
      * @param mixed $plugin
      * @throws InvalidServiceException
      */
-    public function validatePlugin($plugin)
+    public function validatePlugin($plugin): void
     {
         try {
             $this->validate($plugin);
@@ -110,6 +59,27 @@ class FilterPluginManager extends AbstractPluginManager
                 'Plugin of type %s is invalid; must implement %s\Filter\FilterInterface',
                 get_debug_type($plugin),
                 __NAMESPACE__
+            ));
+        }
+    }
+
+    /**
+     * Validate the plugin is of the expected type (v3).
+     *
+     * Validates against `$instanceOf`.
+     *
+     * @param mixed $instance
+     * @throws InvalidServiceException
+     */
+    #[Override]
+    public function validate($instance): void
+    {
+        if (! $instance instanceof $this->instanceOf) {
+            throw new InvalidServiceException(sprintf(
+                '%s can only create instances of %s; %s is invalid',
+                static::class,
+                $this->instanceOf,
+                get_debug_type($instance)
             ));
         }
     }

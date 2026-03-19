@@ -12,31 +12,26 @@ interface WriterInterface
     /**
      * Add a log filter to the writer
      *
-     * @param  int|string|Filter $filter
-     * @return WriterInterface
+     * @param int|string|Filter $filter
      */
-    public function addFilter($filter);
+    public function addFilter($filter): WriterInterface;
 
     /**
      * Set a message formatter for the writer
      *
      * @param string|Formatter $formatter
-     * @return WriterInterface
      */
-    public function setFormatter($formatter);
+    public function setFormatter($formatter): WriterInterface;
 
     /**
      * Write a log message
      *
-     * @param  array $event
-     * @return WriterInterface
+     * @param array $event
      */
-    public function write(array $event);
+    public function write(array $event): WriterInterface;
 
     /**
      * Perform shutdown activities
-     *
-     * @return void
      */
-    public function shutdown();
+    public function shutdown(): void;
 }

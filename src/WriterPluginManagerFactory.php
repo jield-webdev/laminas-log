@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Laminas\Log;
 
 use Laminas\ServiceManager\Config;
-use Laminas\ServiceManager\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 use function is_array;
@@ -14,18 +13,11 @@ use function is_array;
 class WriterPluginManagerFactory implements FactoryInterface
 {
     /**
-     * laminas-servicemanager v2 support for invocation options.
-     *
-     * @param array
-     */
-    protected $creationOptions;
-
-    /**
      * {@inheritDoc}
      *
      * @return WriterPluginManager
      */
-    public function __invoke(ContainerInterface $container, $name, ?array $options = null)
+    public function __invoke(ContainerInterface $container, $name, ?array $options = null): WriterPluginManager
     {
         $pluginManager = new WriterPluginManager($container, $options ?: []);
 
@@ -51,26 +43,5 @@ class WriterPluginManagerFactory implements FactoryInterface
         (new Config($config['log_writers']))->configureServiceManager($pluginManager);
 
         return $pluginManager;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return WriterPluginManager
-     */
-    public function createService(ServiceLocatorInterface $container, $name = null, $requestedName = null)
-    {
-        return $this($container, $requestedName ?: WriterPluginManager::class, $this->creationOptions);
-    }
-
-    /**
-     * laminas-servicemanager v2 support for invocation options.
-     *
-     * @param array $options
-     * @return void
-     */
-    public function setCreationOptions(array $options)
-    {
-        $this->creationOptions = $options;
     }
 }

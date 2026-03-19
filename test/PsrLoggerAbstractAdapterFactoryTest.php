@@ -18,26 +18,6 @@ class PsrLoggerAbstractAdapterFactoryTest extends TestCase
     protected $serviceManager;
 
     /**
-     * Set up LoggerAbstractServiceFactory and loggers configuration.
-     */
-    protected function setUp(): void
-    {
-        $this->serviceManager = new ServiceManager();
-        $config               = new Config([
-            'abstract_factories' => [PsrLoggerAbstractAdapterFactory::class],
-            'services'           => [
-                'config' => [
-                    'psr_log' => [
-                        'Application\Frontend' => [],
-                        'Application\Backend'  => [],
-                    ],
-                ],
-            ],
-        ]);
-        $config->configureServiceManager($this->serviceManager);
-    }
-
-    /**
      * @return array
      */
     public function providerValidLoggerService()
@@ -78,5 +58,25 @@ class PsrLoggerAbstractAdapterFactoryTest extends TestCase
     {
         $this->expectException(ServiceNotFoundException::class);
         $this->serviceManager->get($service);
+    }
+
+    /**
+     * Set up LoggerAbstractServiceFactory and loggers configuration.
+     */
+    protected function setUp(): void
+    {
+        $this->serviceManager = new ServiceManager();
+        $config               = new Config([
+            'abstract_factories' => [PsrLoggerAbstractAdapterFactory::class],
+            'services'           => [
+                'config' => [
+                    'psr_log' => [
+                        'Application\Frontend' => [],
+                        'Application\Backend'  => [],
+                    ],
+                ],
+            ],
+        ]);
+        $config->configureServiceManager($this->serviceManager);
     }
 }

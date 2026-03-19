@@ -19,7 +19,7 @@ class Sample implements FilterInterface
      *
      * @var float
      */
-    protected $sampleRate;
+    protected float $sampleRate;
 
     /**
      * Filters logging by sample rate.
@@ -28,7 +28,7 @@ class Sample implements FilterInterface
      * If 0.5, only half of the values will be logged.
      * If 0.1 only 1 among 10 values will be logged.
      *
-     * @param  float|int $sampleRate Sample rate [0-1].
+     * @param float|int $sampleRate Sample rate [0-1].
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($sampleRate = 1)
@@ -46,10 +46,10 @@ class Sample implements FilterInterface
     /**
      * Returns TRUE to accept the message, FALSE to block it.
      *
-     * @param  array $event event data
+     * @param array $event event data
      * @return bool Accepted ?
      */
-    public function filter(array $event)
+    public function filter(array $event): bool
     {
         return (mt_rand() / mt_getrandmax()) <= $this->sampleRate;
     }

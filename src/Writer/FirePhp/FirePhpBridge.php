@@ -13,7 +13,7 @@ class FirePhpBridge implements FirePhpInterface
      *
      * @var FirePHP
      */
-    protected $firephp;
+    protected FirePHP $firephp;
 
     /**
      * Constructor
@@ -28,7 +28,7 @@ class FirePhpBridge implements FirePhpInterface
      *
      * @return FirePHP
      */
-    public function getFirePhp()
+    public function getFirePhp(): FirePHP
     {
         return $this->firephp;
     }
@@ -38,7 +38,7 @@ class FirePhpBridge implements FirePhpInterface
      *
      * @return bool
      */
-    public function getEnabled()
+    public function getEnabled(): bool
     {
         return $this->firephp->getEnabled();
     }
@@ -50,7 +50,7 @@ class FirePhpBridge implements FirePhpInterface
      * @param string|null $label
      * @return bool
      */
-    public function error($line, $label = null)
+    public function error($line, $label = null): bool
     {
         return $this->firephp->error($line, $label);
     }
@@ -58,11 +58,11 @@ class FirePhpBridge implements FirePhpInterface
     /**
      * Log a warning
      *
-     * @param  string      $line
-     * @param  string|null $label
+     * @param string $line
+     * @param string|null $label
      * @return bool
      */
-    public function warn($line, $label = null)
+    public function warn($line, $label = null): bool
     {
         return $this->firephp->warn($line, $label);
     }
@@ -70,34 +70,34 @@ class FirePhpBridge implements FirePhpInterface
     /**
      * Log informational message
      *
-     * @param  string      $line
-     * @param  string|null $label
+     * @param string $line
+     * @param string|null $label
      * @return bool
      */
-    public function info($line, $label = null)
+    public function info($line, $label = null): bool
     {
         return $this->firephp->info($line, $label);
     }
 
     /**
-     * Log a trace
+     * Log a message
      *
-     * @param  string $line
+     * @param string $line
+     * @param string|null $label
      * @return bool
      */
-    public function trace($line)
+    public function log($line, $label = null): bool
     {
         return $this->firephp->trace($line);
     }
 
     /**
-     * Log a message
+     * Log a trace
      *
-     * @param  string      $line
-     * @param  string|null $label
+     * @param string $line
      * @return bool
      */
-    public function log($line, $label = null)
+    public function trace($line): bool
     {
         return $this->firephp->trace($line);
     }

@@ -27,14 +27,6 @@ class DbTest extends TestCase
     private MockDbAdapter $db;
     private DbWriter $writer;
 
-    protected function setUp(): void
-    {
-        $this->tableName = 'db-table-name';
-
-        $this->db     = new MockDbAdapter();
-        $this->writer = new DbWriter($this->db, $this->tableName);
-    }
-
     public function testNotPassingTableNameToConstructorThrowsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -411,5 +403,13 @@ class DbTest extends TestCase
                 $field
             ));
         }
+    }
+
+    protected function setUp(): void
+    {
+        $this->tableName = 'db-table-name';
+
+        $this->db     = new MockDbAdapter();
+        $this->writer = new DbWriter($this->db, $this->tableName);
     }
 }

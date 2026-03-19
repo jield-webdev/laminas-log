@@ -23,7 +23,7 @@ class Regex implements FilterInterface
      *
      * @var string
      */
-    protected $regex;
+    protected mixed $regex;
 
     /**
      * Filter out any log messages not matching the pattern
@@ -60,7 +60,7 @@ class Regex implements FilterInterface
      * @param array $event event data
      * @return bool accepted?
      */
-    public function filter(array $event)
+    public function filter(array $event): bool
     {
         $message = $event['message'];
         if (is_array($event['message'])) {

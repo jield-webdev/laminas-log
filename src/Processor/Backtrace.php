@@ -7,7 +7,7 @@ namespace Laminas\Log\Processor;
 use function array_merge;
 use function array_shift;
 use function debug_backtrace;
-use function strpos;
+use function str_contains;
 
 use const DEBUG_BACKTRACE_IGNORE_ARGS;
 
@@ -18,14 +18,14 @@ class Backtrace implements ProcessorInterface
      *
      * @var int
      */
-    protected $traceLimit = 10;
+    protected int $traceLimit = 10;
 
     /**
      * Classes within these namespaces in the stack are ignored
      *
      * @var array
      */
-    protected $ignoredNamespaces = ['Laminas\\Log'];
+    protected array $ignoredNamespaces = ['Laminas\\Log'];
 
     /**
      * Set options for a backtrace processor. Accepted options are:
@@ -46,7 +46,7 @@ class Backtrace implements ProcessorInterface
      * @param array $event event data
      * @return array event data
      */
-    public function process(array $event)
+    public function process(array $event): array
     {
         $trace = $this->getBacktrace();
 
@@ -56,7 +56,7 @@ class Backtrace implements ProcessorInterface
         $i = 0;
         while (
             isset($trace[$i]['class'])
-               && $this->shouldIgnoreFrame($trace[$i]['class'])
+            && $this->shouldIgnoreFrame($trace[$i]['class'])
         ) {
             $i++;
         }
@@ -79,21 +79,11 @@ class Backtrace implements ProcessorInterface
     }
 
     /**
-     * Get all ignored namespaces
-     *
-     * @return array
-     */
-    public function getIgnoredNamespaces()
-    {
-        return $this->ignoredNamespaces;
-    }
-
-    /**
      * Provide backtrace as slim as possible
      *
      * @return array[]
      */
-    protected function getBacktrace()
+    protected function getBacktrace(): array
     {
         return debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $this->traceLimit);
     }
@@ -102,9 +92,8 @@ class Backtrace implements ProcessorInterface
      * Determine whether the current frame in the backtrace should be ignored based on the class name
      *
      * @param string $class
-     * @return bool
      */
-    protected function shouldIgnoreFrame($class)
+    protected function shouldIgnoreFrame($class): bool
     {
         foreach ($this->ignoredNamespaces as $ignoredNamespace) {
             if (str_contains($class, (string) $ignoredNamespace)) {
@@ -113,5 +102,15 @@ class Backtrace implements ProcessorInterface
         }
 
         return false;
+    }
+
+    /**
+     * Get all ignored namespaces
+     *
+     * @return array
+     */
+    public function getIgnoredNamespaces(): array
+    {
+        return $this->ignoredNamespaces;
     }
 }

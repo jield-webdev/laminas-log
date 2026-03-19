@@ -13,7 +13,7 @@ class RequestId implements ProcessorInterface
      *
      * @var string
      */
-    protected $identifier;
+    protected string $identifier;
 
     /**
      * Adds an identifier for the request to the log, unless one has already been set.
@@ -23,7 +23,7 @@ class RequestId implements ProcessorInterface
      * @param array $event event data
      * @return array event data
      */
-    public function process(array $event)
+    public function process(array $event): array
     {
         if (isset($event['extra']['requestId'])) {
             return $event;
@@ -39,10 +39,8 @@ class RequestId implements ProcessorInterface
 
     /**
      * Provide unique identifier for a request
-     *
-     * @return string
      */
-    protected function getIdentifier()
+    protected function getIdentifier(): string
     {
         if ($this->identifier) {
             return $this->identifier;

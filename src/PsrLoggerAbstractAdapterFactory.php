@@ -22,7 +22,7 @@ class PsrLoggerAbstractAdapterFactory implements AbstractFactoryInterface
      *
      * @var string
      */
-    protected $configKey = 'psr_log';
+    protected string $configKey = 'psr_log';
 
     private readonly LoggerAbstractServiceFactory $loggerAbstractServiceFactory;
 
@@ -33,11 +33,10 @@ class PsrLoggerAbstractAdapterFactory implements AbstractFactoryInterface
 
     /**
      * @param string $requestedName
-     * @return PsrLoggerAdapter
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): PsrLoggerAdapter
     {
         $loggerFactory = $this->loggerAbstractServiceFactory;
         $logger        = $loggerFactory($container, $requestedName);
@@ -50,11 +49,10 @@ class PsrLoggerAbstractAdapterFactory implements AbstractFactoryInterface
      *
      * @param string $name
      * @param string $requestedName
-     * @return bool
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
+    public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName): bool
     {
         return $this->canCreate($serviceLocator, $name);
     }
@@ -63,11 +61,10 @@ class PsrLoggerAbstractAdapterFactory implements AbstractFactoryInterface
      * Can the factory create an instance for the service?
      *
      * @param string $requestedName
-     * @return bool
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function canCreate(ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, $requestedName): bool
     {
         return $this->loggerAbstractServiceFactory->canCreate($container, $requestedName);
     }
@@ -77,12 +74,10 @@ class PsrLoggerAbstractAdapterFactory implements AbstractFactoryInterface
      *
      * @param string $name
      * @param string $requestedName
-     * @return PsrLoggerAdapter
-     * @throws ContainerException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
+    public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName): PsrLoggerAdapter
     {
         return $this($serviceLocator, $requestedName);
     }

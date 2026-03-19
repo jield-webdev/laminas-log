@@ -1,21 +1,21 @@
 docs_dir: docs/book
 site_dir: docs/html
 nav:
-    - Home: index.md
-    - Introduction: intro.md
-    - Installation: installation.md
-    - Reference:
+  - Home: index.md
+  - Introduction: intro.md
+  - Installation: installation.md
+  - Reference:
       - Writers: writers.md
       - Filters: filters.md
       - Formatters: formatters.md
       - Processors: processors.md
       - "Service Manager Integration": service-manager.md
-    - 'PSR-3 Support': psr3.md
+  - 'PSR-3 Support': psr3.md
 site_name: laminas-log (Abandoned)
 site_description: 'Robust, composite logger with filtering, formatting, and PSR-3 support.'
 repo_url: 'https://github.com/laminas/laminas-log'
 extra:
-    project: Components
-    installation:
-      config_provider_class: 'Laminas\Log\ConfigProvider'
-      module_class: 'Laminas\Log\Module'
+  project: Components
+  installation:
+    config_provider_class: 'Laminas\Log\ConfigProvider'
+    module_class: 'Laminas\Log\Module'

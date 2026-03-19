@@ -11,14 +11,24 @@ class Mock extends AbstractWriter
      *
      * @var array
      */
-    public $events = [];
+    public array $events = [];
 
     /**
      * shutdown called?
      *
      * @var bool
      */
-    public $shutdown = false;
+    public bool $shutdown = false;
+
+    /**
+     * Record shutdown
+     *
+     * @return void
+     */
+    public function shutdown(): void
+    {
+        $this->shutdown = true;
+    }
 
     /**
      * Write a message to the log.
@@ -26,18 +36,8 @@ class Mock extends AbstractWriter
      * @param array $event event data
      * @return void
      */
-    protected function doWrite(array $event)
+    protected function doWrite(array $event): void
     {
         $this->events[] = $event;
-    }
-
-    /**
-     * Record shutdown
-     *
-     * @return void
-     */
-    public function shutdown()
-    {
-        $this->shutdown = true;
     }
 }

@@ -6,9 +6,7 @@ namespace Laminas\Log\Formatter;
 
 use DateTime;
 use Traversable;
-
 use function defined;
-use function get_class;
 use function get_resource_type;
 use function gettype;
 use function is_array;
@@ -19,7 +17,6 @@ use function iterator_to_array;
 use function json_encode;
 use function method_exists;
 use function sprintf;
-
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 
@@ -32,7 +29,7 @@ class Base implements FormatterInterface
      *
      * @var string
      */
-    protected $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
+    protected mixed $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
 
     /**
      * @see http://php.net/manual/en/function.date.php
@@ -58,9 +55,9 @@ class Base implements FormatterInterface
      * Formats data to be written by the writer.
      *
      * @param array $event event data
-     * @return array
+     * @return array|string
      */
-    public function format($event)
+    public function format($event): array|string
     {
         foreach ($event as $key => $value) {
             // Keep extra as an array
@@ -76,7 +73,7 @@ class Base implements FormatterInterface
      * @param mixed $value
      * @return mixed
      */
-    protected function normalize($value)
+    protected function normalize($value): mixed
     {
         if (is_scalar($value) || null === $value) {
             return $value;
@@ -85,7 +82,7 @@ class Base implements FormatterInterface
         // better readable JSON
         static $jsonFlags;
         if ($jsonFlags === null) {
-            $jsonFlags  = 0;
+            $jsonFlags = 0;
             $jsonFlags |= defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : 0;
             $jsonFlags |= defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0;
         }
@@ -101,15 +98,15 @@ class Base implements FormatterInterface
             $value = @json_encode(iterator_to_array($value), $jsonFlags);
         } elseif (is_array($value)) {
             $value = @json_encode($value, $jsonFlags);
-        } elseif (is_object($value) && ! method_exists($value, '__toString')) {
+        } elseif (is_object($value) && !method_exists($value, '__toString')) {
             $value = sprintf('object(%s) %s', $value::class, @json_encode($value));
         } elseif (is_resource($value)) {
             $value = sprintf('resource(%s)', get_resource_type($value));
-        } elseif (! is_object($value)) {
+        } elseif (!is_object($value)) {
             $value = gettype($value);
         }
 
-        return (string) $value;
+        return (string)$value;
     }
 
     /**
@@ -123,9 +120,9 @@ class Base implements FormatterInterface
     /**
      * {@inheritDoc}
      */
-    public function setDateTimeFormat($dateTimeFormat)
+    public function setDateTimeFormat($dateTimeFormat): FormatterInterface|static
     {
-        $this->dateTimeFormat = (string) $dateTimeFormat;
+        $this->dateTimeFormat = (string)$dateTimeFormat;
         return $this;
     }
 }

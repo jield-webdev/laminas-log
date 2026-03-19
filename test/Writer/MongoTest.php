@@ -16,33 +16,6 @@ use function version_compare;
 
 class MongoTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        if (! extension_loaded('mongo')) {
-            $this->markTestSkipped('The mongo PHP extension is not available');
-        }
-
-        $this->database   = 'laminas_test';
-        $this->collection = 'logs';
-
-        $mongoClass = version_compare(phpversion('mongo'), '1.3.0', '<') ? 'Mongo' : 'MongoClient';
-
-        $this->mongo = $this->getMockBuilder($mongoClass)
-            ->disableOriginalConstructor()
-            ->setMethods(['selectCollection'])
-            ->getMock();
-
-        $this->mongoCollection = $this->getMockBuilder('MongoCollection')
-            ->disableOriginalConstructor()
-            ->setMethods(['save'])
-            ->getMock();
-
-        $this->mongo->expects($this->any())
-            ->method('selectCollection')
-            ->with($this->database, $this->collection)
-            ->will($this->returnValue($this->mongoCollection));
-    }
-
     public function testFormattingIsNotSupported(): void
     {
         $writer = new MongoWriter($this->mongo, $this->database, $this->collection);
@@ -90,5 +63,32 @@ class MongoTest extends TestCase
         $writer = new MongoWriter($this->mongo, $this->database, $this->collection);
 
         $writer->write($event);
+    }
+
+    protected function setUp(): void
+    {
+        if (! extension_loaded('mongo')) {
+            $this->markTestSkipped('The mongo PHP extension is not available');
+        }
+
+        $this->database   = 'laminas_test';
+        $this->collection = 'logs';
+
+        $mongoClass = version_compare(phpversion('mongo'), '1.3.0', '<') ? 'Mongo' : 'MongoClient';
+
+        $this->mongo = $this->getMockBuilder($mongoClass)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+
+        $this->mongoCollection = $this->getMockBuilder('MongoCollection')
+            ->disableOriginalConstructor()
+            ->setMethods(['save'])
+            ->getMock();
+
+        $this->mongo->expects($this->any())
+            ->method('selectCollection')
+            ->with($this->database, $this->collection)
+            ->will($this->returnValue($this->mongoCollection));
     }
 }

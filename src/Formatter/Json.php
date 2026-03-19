@@ -22,7 +22,7 @@ class Json implements FormatterInterface
      *
      * @var string
      */
-    protected $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
+    protected string $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
 
     /**
      * Formats data into a single line to be written by the writer.
@@ -30,7 +30,7 @@ class Json implements FormatterInterface
      * @param array $event event data
      * @return string formatted line to write to the log
      */
-    public function format($event)
+    public function format($event): string
     {
         if (isset($event['timestamp']) && $event['timestamp'] instanceof DateTime) {
             $event['timestamp'] = $event['timestamp']->format($this->getDateTimeFormat());
@@ -45,7 +45,7 @@ class Json implements FormatterInterface
     /**
      * {@inheritDoc}
      */
-    public function getDateTimeFormat()
+    public function getDateTimeFormat(): string
     {
         return $this->dateTimeFormat;
     }
@@ -53,7 +53,7 @@ class Json implements FormatterInterface
     /**
      * {@inheritDoc}
      */
-    public function setDateTimeFormat($dateTimeFormat)
+    public function setDateTimeFormat($dateTimeFormat): FormatterInterface|static
     {
         $this->dateTimeFormat = (string) $dateTimeFormat;
         return $this;

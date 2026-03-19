@@ -25,25 +25,24 @@ class Psr extends AbstractWriter
     /**
      * Map priority to PSR-3 LogLevels
      *
-     * @var int[]
+     * @var array<int, string>
      */
-    protected $psrPriorityMap = [
-        Logger::EMERG  => LogLevel::EMERGENCY,
-        Logger::ALERT  => LogLevel::ALERT,
-        Logger::CRIT   => LogLevel::CRITICAL,
-        Logger::ERR    => LogLevel::ERROR,
-        Logger::WARN   => LogLevel::WARNING,
-        Logger::NOTICE => LogLevel::NOTICE,
-        Logger::INFO   => LogLevel::INFO,
-        Logger::DEBUG  => LogLevel::DEBUG,
-    ];
+    protected array $psrPriorityMap
+        = [
+            Logger::EMERG  => LogLevel::EMERGENCY,
+            Logger::ALERT  => LogLevel::ALERT,
+            Logger::CRIT   => LogLevel::CRITICAL,
+            Logger::ERR    => LogLevel::ERROR,
+            Logger::WARN   => LogLevel::WARNING,
+            Logger::NOTICE => LogLevel::NOTICE,
+            Logger::INFO   => LogLevel::INFO,
+            Logger::DEBUG  => LogLevel::DEBUG,
+        ];
 
     /**
      * Default log level (warning)
-     *
-     * @var int
      */
-    protected $defaultLogLevel = LogLevel::WARNING;
+    protected string $defaultLogLevel = LogLevel::WARNING;
 
     /**
      * Constructor
@@ -54,7 +53,7 @@ class Psr extends AbstractWriter
      * - formatter: formatter for this writer
      * - logger: PsrLoggerInterface implementation
      *
-     * @param  array|Traversable|PsrLoggerInterface $options
+     * @param array|Traversable|PsrLoggerInterface $options
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($options = null)
@@ -73,7 +72,7 @@ class Psr extends AbstractWriter
 
         parent::__construct($options);
 
-        if (!$this->logger instanceof \Psr\Log\LoggerInterface) {
+        if (! $this->logger instanceof PsrLoggerInterface) {
             $this->setLogger(new NullLogger());
         }
     }
@@ -84,7 +83,7 @@ class Psr extends AbstractWriter
      * @param array $event event data
      * @return void
      */
-    protected function doWrite(array $event)
+    protected function doWrite(array $event): void
     {
         $priority = $event['priority'];
         $message  = $event['message'];

@@ -11,16 +11,11 @@ use Laminas\Mail\MessageFactory as MailMessageFactory;
 use Laminas\Mail\Transport;
 use Laminas\Mail\Transport\Exception as TransportException;
 use Traversable;
-
-use function get_class;
-use function gettype;
 use function implode;
 use function is_array;
-use function is_object;
 use function iterator_to_array;
 use function sprintf;
 use function trigger_error;
-
 use const E_USER_WARNING;
 use const PHP_EOL;
 
@@ -40,28 +35,28 @@ class Mail extends AbstractWriter
      *
      * @var array
      */
-    protected $eventsToMail = [];
+    protected array $eventsToMail = [];
 
     /**
      * Mail message instance to use
      *
      * @var MailMessage
      */
-    protected $mail;
+    protected MailMessage $mail;
 
     /**
      * Mail transport instance to use; optional.
      *
      * @var Transport\TransportInterface
      */
-    protected $transport;
+    protected Transport\TransportInterface $transport;
 
     /**
      * Array keeping track of the number of entries per priority level.
      *
      * @var array
      */
-    protected $numEntriesPerPriority = [];
+    protected array $numEntriesPerPriority = [];
 
     /**
      * Subject prepend text.
@@ -72,13 +67,13 @@ class Mail extends AbstractWriter
      *
      * @var string|null
      */
-    protected $subjectPrependText;
+    protected ?string $subjectPrependText;
 
     /**
      * Constructor
      *
-     * @param  MailMessage|array|Traversable $mail
-     * @param  Transport\TransportInterface $transport Optional
+     * @param MailMessage|array|Traversable $mail
+     * @param Transport\TransportInterface $transport Optional
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($mail, ?Transport\TransportInterface $transport = null)
@@ -94,7 +89,7 @@ class Mail extends AbstractWriter
             }
 
             $transport = $mail['transport'] ?? null;
-            $mail      = $mail['mail'] ?? null;
+            $mail = $mail['mail'] ?? null;
             if (is_array($mail)) {
                 $mail = MailMessageFactory::getInstance($mail);
             }
@@ -105,7 +100,7 @@ class Mail extends AbstractWriter
         }
 
         // Ensure we have a valid mail message
-        if (! $mail instanceof MailMessage) {
+        if (!$mail instanceof MailMessage) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Mail parameter of type %s is invalid; must be of type Laminas\Mail\Message',
                 get_debug_type($mail)
@@ -119,7 +114,7 @@ class Mail extends AbstractWriter
             $transport = new Transport\Sendmail();
         }
 
-        if (! $transport instanceof Transport\TransportInterface) {
+        if (!$transport instanceof Transport\TransportInterface) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Transport parameter of type %s is invalid; must be of type Laminas\Mail\Transport\TransportInterface',
                 get_debug_type($transport)
@@ -134,35 +129,6 @@ class Mail extends AbstractWriter
     }
 
     /**
-     * Set the transport message
-     *
-     * @return Mail
-     */
-    public function setTransport(Transport\TransportInterface $transport)
-    {
-        $this->transport = $transport;
-        return $this;
-    }
-
-    /**
-     * Places event line into array of lines to be used as message body.
-     *
-     * @param array $event Event data
-     */
-    protected function doWrite(array $event)
-    {
-        // Track the number of entries per priority level.
-        if (! isset($this->numEntriesPerPriority[$event['priorityName']])) {
-            $this->numEntriesPerPriority[$event['priorityName']] = 1;
-        } else {
-            $this->numEntriesPerPriority[$event['priorityName']]++;
-        }
-
-        // All plaintext events are to use the standard formatter.
-        $this->eventsToMail[] = $this->formatter->format($event);
-    }
-
-    /**
      * Allows caller to have the mail subject dynamically set to contain the
      * entry counts per-priority level.
      *
@@ -171,12 +137,23 @@ class Mail extends AbstractWriter
      * once, this method cannot be used if the Laminas\Mail\Message object already has a
      * subject set.
      *
-     * @param  string $subject Subject prepend text
+     * @param string $subject Subject prepend text
      * @return Mail
      */
-    public function setSubjectPrependText($subject)
+    public function setSubjectPrependText($subject): static
     {
-        $this->subjectPrependText = (string) $subject;
+        $this->subjectPrependText = (string)$subject;
+        return $this;
+    }
+
+    /**
+     * Set the transport message
+     *
+     * @return Mail
+     */
+    public function setTransport(Transport\TransportInterface $transport): static
+    {
+        $this->transport = $transport;
         return $this;
     }
 
@@ -184,7 +161,7 @@ class Mail extends AbstractWriter
      * Sends mail to recipient(s) if log entries are present.  Note that both
      * plaintext and HTML portions of email are handled here.
      */
-    public function shutdown()
+    public function shutdown(): void
     {
         // If there are events to mail, use them as message body.  Otherwise,
         // there is no mail to be sent.
@@ -224,7 +201,7 @@ class Mail extends AbstractWriter
      *
      * @return string
      */
-    protected function getFormattedNumEntriesPerPriority()
+    protected function getFormattedNumEntriesPerPriority(): string
     {
         $strings = [];
 
@@ -233,5 +210,23 @@ class Mail extends AbstractWriter
         }
 
         return implode(', ', $strings);
+    }
+
+    /**
+     * Places event line into array of lines to be used as message body.
+     *
+     * @param array $event Event data
+     */
+    protected function doWrite(array $event): void
+    {
+        // Track the number of entries per priority level.
+        if (!isset($this->numEntriesPerPriority[$event['priorityName']])) {
+            $this->numEntriesPerPriority[$event['priorityName']] = 1;
+        } else {
+            $this->numEntriesPerPriority[$event['priorityName']]++;
+        }
+
+        // All plaintext events are to use the standard formatter.
+        $this->eventsToMail[] = $this->formatter->format($event);
     }
 }

@@ -68,12 +68,12 @@ $logger->info('Informational message');
 The following table details all allowed constructor arguments and their
 corresponding configuration options.
 
-Constructor Argument | Option Name | Default | Description
--------------------- | ----------- | ------- | -----------
-`$streamOrUrl` | stream | None; required | Stream resource or URL to open and log to
-`$mode` | mode | "a" | Stream access mode to use when opening a stream URL
-`$logSeparator` | log\_separator | `PHP_EOL` | Separator string to use between entries
-`$filePermissions` | chmod | `null` | Permissions mode to use for stream resource; defaults to existing file/stream permissions
+ Constructor Argument | Option Name    | Default        | Description                                                                               
+----------------------|----------------|----------------|-------------------------------------------------------------------------------------------
+ `$streamOrUrl`       | stream         | None; required | Stream resource or URL to open and log to                                                 
+ `$mode`              | mode           | "a"            | Stream access mode to use when opening a stream URL                                       
+ `$logSeparator`      | log\_separator | `PHP_EOL`      | Separator string to use between entries                                                   
+ `$filePermissions`   | chmod          | `null`         | Permissions mode to use for stream resource; defaults to existing file/stream permissions 
 
 ## Writing to Databases
 
@@ -178,14 +178,16 @@ $logger->addWriter($writer);
 $logger->info('Informational message');
 ```
 
-An email of the logged information will be sent via `sendmail` by default. You may also provide a `Laminas\Mail\Transport`
+An email of the logged information will be sent via `sendmail` by default. You may also provide a
+`Laminas\Mail\Transport`
 during construction. For configuration options checkout the `Laminas\Mail\Transport` documentation.
 
 ```php
 $writer = new Laminas\Log\Writer\Mail($mail, $transport);
 ```
 
-`Laminas\Log\Writer\mail` may also be constructed with a configuration array. The configuration array accepts the following
+`Laminas\Log\Writer\mail` may also be constructed with a configuration array. The configuration array accepts the
+following
 keys:
 
 ```php
@@ -200,14 +202,14 @@ keys:
 
 And expects the following data:
 
-Array Index | Accepted Values | Description
------------ | --------------- | -----------
-`subject_prepend_text` | string | Mail message
-`transport` | `Transport\TransportInterface` | Transport method
-`mail` | `Laminas\Mail\Message` | mail message
-`mail` | `array` | `Laminas\Mail\Message` factory array
-`filters` | array, int, string, Laminas\Log\Filter\FilterInterface | Log filter(s)
-`formatter` | array, string, Laminas\Log\Formatter\FormatterInterface | Log formatter(s)
+ Array Index            | Accepted Values                                         | Description                          
+------------------------|---------------------------------------------------------|--------------------------------------
+ `subject_prepend_text` | string                                                  | Mail message                         
+ `transport`            | `Transport\TransportInterface`                          | Transport method                     
+ `mail`                 | `Laminas\Mail\Message`                                  | mail message                         
+ `mail`                 | `array`                                                 | `Laminas\Mail\Message` factory array 
+ `filters`              | array, int, string, Laminas\Log\Filter\FilterInterface  | Log filter(s)                        
+ `formatter`            | array, string, Laminas\Log\Formatter\FormatterInterface | Log formatter(s)                     
 
 Basic usage of the configuration array looks like:
 
@@ -275,14 +277,14 @@ In this example `Laminas\Log\Writer\MongoDB` uses an array for construction. Ava
 
 `collection`, `database`, and `mongo` are required. Each key accepts:
 
-Array Index    | Accepted Values                                        | Description
--------------- | ------------------------------------------------------ | -----------
-`save_options` | array                                                  | MongoDB driver options
-`collection`   | string                                                 | collection name
-`database`     | string                                                 | database name
-`mongo`        | `Mongo` or `MongoClient`                               | MongoDB connection object
-`filters`      | array, int, string, `Laminas\Log\Filter\FilterInterface`  | Log filter(s)
-`formatter`    | array, string, `Laminas\Log\Formatter\FormatterInterface` | Log formatter(s)
+ Array Index    | Accepted Values                                           | Description               
+----------------|-----------------------------------------------------------|---------------------------
+ `save_options` | array                                                     | MongoDB driver options    
+ `collection`   | string                                                    | collection name           
+ `database`     | string                                                    | database name             
+ `mongo`        | `Mongo` or `MongoClient`                                  | MongoDB connection object 
+ `filters`      | array, int, string, `Laminas\Log\Filter\FilterInterface`  | Log filter(s)             
+ `formatter`    | array, string, `Laminas\Log\Formatter\FormatterInterface` | Log formatter(s)          
 
 And `Laminas\Log\Writer\MongoDB` is used like this:
 
@@ -338,14 +340,14 @@ In this example `Laminas\Log\Writer\MongoDB` uses an array for construction. Ava
 
 `collection`, `database`, and `manager` are required. Each key accepts:
 
-Array Index    | Accepted Values                                        | Description
----------------| ------------------------------------------------------ | -----------
-`save_options` | array                                                  | MongoDB driver options
-`collection`   | string                                                 | collection name
-`database`     | string                                                 | database name
-`manager`      | `MongoDB\Driver\Manager`                               | MongoDB connection object
-`filters`      | array, int, string, `Laminas\Log\Filter\FilterInterface`  | Log filter(s)
-`formatter`    | array, string, `Laminas\Log\Formatter\FormatterInterface` | Log formatter(s)
+ Array Index    | Accepted Values                                           | Description               
+----------------|-----------------------------------------------------------|---------------------------
+ `save_options` | array                                                     | MongoDB driver options    
+ `collection`   | string                                                    | collection name           
+ `database`     | string                                                    | database name             
+ `manager`      | `MongoDB\Driver\Manager`                                  | MongoDB connection object 
+ `filters`      | array, int, string, `Laminas\Log\Filter\FilterInterface`  | Log filter(s)             
+ `formatter`    | array, string, `Laminas\Log\Formatter\FormatterInterface` | Log formatter(s)          
 
 And `Laminas\Log\Writer\MongoDB` is used like this:
 
@@ -399,12 +401,12 @@ $logger->info('Informational message');
 
 The application name and syslog facility may be set
 
-Array Index | Accepted Values | Description
------------ | --------------- | -----------
-`application` | string | application name
-`facility` | string | syslog facility [list of facilities](http://php.net/openlog)
-`filters` | array, int, string, Laminas\Log\Filter\FilterInterface | Log filter(s)
-`formatter` | array, string, Laminas\Log\Formatter\FormatterInterface | Log formatter(s)
+ Array Index   | Accepted Values                                         | Description                                                  
+---------------|---------------------------------------------------------|--------------------------------------------------------------
+ `application` | string                                                  | application name                                             
+ `facility`    | string                                                  | syslog facility [list of facilities](http://php.net/openlog) 
+ `filters`     | array, int, string, Laminas\Log\Filter\FilterInterface  | Log filter(s)                                                
+ `formatter`   | array, string, Laminas\Log\Formatter\FormatterInterface | Log formatter(s)                                             
 
 ```php
 $writer = new \Laminas\Log\Writer\Syslog([
@@ -422,7 +424,8 @@ $logger->info('Informational message');
 
 ## Writing to Zend Monitor
 
-`Laminas\Log\Writer\ZendMonitor` writes log data to the Zend Monitor on a Zend Server. If the web server is not a Laminas
+`Laminas\Log\Writer\ZendMonitor` writes log data to the Zend Monitor on a Zend Server. If the web server is not a
+Laminas
 Server or Zend Monitor is not enabled it will fail silently.
 
 ```php
@@ -436,10 +439,10 @@ $logger->info('Informational message');
 
 `Laminas\Log\Writer\AbstractWriter` options are available.
 
-Array Index | Accepted Values | Description
------------ | --------------- | -----------
-`filters` | array, int, string, Laminas\Log\Filter\FilterInterface | Log filter(s)
-`formatter` | array, string, Laminas\Log\Formatter\FormatterInterface | Log formatter(s)
+ Array Index | Accepted Values                                         | Description      
+-------------|---------------------------------------------------------|------------------
+ `filters`   | array, int, string, Laminas\Log\Filter\FilterInterface  | Log filter(s)    
+ `formatter` | array, string, Laminas\Log\Formatter\FormatterInterface | Log formatter(s) 
 
 ```php
 $writer = new \Laminas\Log\Writer\ZendMonitor([
@@ -533,7 +536,7 @@ which means that:
 
 - higher integer values indicate higher priority (triggered earliest);
 - lower integer values (including negative values) have lower priority
-(triggered last).
+  (triggered last).
 
 ## Distinction between priority in the queue of writers and the filter `Priority`
 
@@ -542,7 +545,8 @@ argument. This priority is the priority in the queue of all writers of the
 logger. It can be any integer, and the default is `1` (`\Laminas\Log\Logger::ALERT`)
 for the writers; the bigger the number, the higher the priority. A writer with a
 lower priority will be triggered later, so `ALERT` is triggered after `DEBUG`.
-For details on the list of the priorities, see the section entitled [Using Built-in Priorities](intro.md#using-built-in-priorities).
+For details on the list of the priorities, see the section
+entitled [Using Built-in Priorities](intro.md#using-built-in-priorities).
 
 This priority should not be confused with the [`Priority` filter](filters.md#available-filters),
 which determines if a message meets a _severity_ threshold. When a `Priority`

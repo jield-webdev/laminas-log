@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Laminas\Log\Processor;
 
+use Override;
+
 class ReferenceId extends RequestId implements ProcessorInterface
 {
     /**
@@ -14,8 +16,8 @@ class ReferenceId extends RequestId implements ProcessorInterface
      * @param array $event event data
      * @return array event data
      */
-    #[\Override]
-    public function process(array $event)
+    #[Override]
+    public function process(array $event): array
     {
         if (isset($event['extra']['referenceId'])) {
             return $event;
@@ -36,7 +38,7 @@ class ReferenceId extends RequestId implements ProcessorInterface
      * @param string $identifier
      * @return self
      */
-    public function setReferenceId($identifier)
+    public function setReferenceId($identifier): static
     {
         $this->identifier = $identifier;
 
@@ -45,10 +47,8 @@ class ReferenceId extends RequestId implements ProcessorInterface
 
     /**
      * Returns identifier.
-     *
-     * @return string
      */
-    public function getReferenceId()
+    public function getReferenceId(): string
     {
         return $this->getIdentifier();
     }

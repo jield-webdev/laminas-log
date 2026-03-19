@@ -25,23 +25,24 @@ class PsrLoggerAdapter extends PsrAbstractLogger
      *
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * Map PSR-3 LogLevels to priority
      *
      * @var array
      */
-    protected $psrPriorityMap = [
-        LogLevel::EMERGENCY => Logger::EMERG,
-        LogLevel::ALERT     => Logger::ALERT,
-        LogLevel::CRITICAL  => Logger::CRIT,
-        LogLevel::ERROR     => Logger::ERR,
-        LogLevel::WARNING   => Logger::WARN,
-        LogLevel::NOTICE    => Logger::NOTICE,
-        LogLevel::INFO      => Logger::INFO,
-        LogLevel::DEBUG     => Logger::DEBUG,
-    ];
+    protected array $psrPriorityMap
+        = [
+            LogLevel::EMERGENCY => Logger::EMERG,
+            LogLevel::ALERT     => Logger::ALERT,
+            LogLevel::CRITICAL  => Logger::CRIT,
+            LogLevel::ERROR     => Logger::ERR,
+            LogLevel::WARNING   => Logger::WARN,
+            LogLevel::NOTICE    => Logger::NOTICE,
+            LogLevel::INFO      => Logger::INFO,
+            LogLevel::DEBUG     => Logger::DEBUG,
+        ];
 
     /**
      * Constructor
@@ -53,10 +54,8 @@ class PsrLoggerAdapter extends PsrAbstractLogger
 
     /**
      * Returns composed LoggerInterface instance.
-     *
-     * @return LoggerInterface
      */
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
         return $this->logger;
     }
@@ -71,7 +70,7 @@ class PsrLoggerAdapter extends PsrAbstractLogger
      */
     public function log($level, $message, array $context = []): void
     {
-        if (!array_key_exists($level, $this->psrPriorityMap)) {
+        if (! array_key_exists($level, $this->psrPriorityMap)) {
             throw new InvalidArgumentException(
                 sprintf(
                     '$level must be one of PSR-3 log levels; received %s',

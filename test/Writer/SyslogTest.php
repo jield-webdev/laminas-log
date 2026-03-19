@@ -67,7 +67,7 @@ class SyslogTest extends TestCase
     {
         $writer   = new SyslogWriter();
         $instance = $writer->setFacility(LOG_USER)
-                           ->setApplicationName('my_app');
+            ->setApplicationName('my_app');
 
         $this->assertInstanceOf(SyslogWriter::class, $instance);
     }

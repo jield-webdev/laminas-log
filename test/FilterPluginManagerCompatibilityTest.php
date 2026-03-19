@@ -19,21 +19,6 @@ class FilterPluginManagerCompatibilityTest extends TestCase
     use CommonPluginManagerTrait;
     use ServicesNotSharedByDefaultTrait;
 
-    protected static function getPluginManager(): AbstractPluginManager
-    {
-        return new FilterPluginManager(new ServiceManager());
-    }
-
-    protected function getV2InvalidPluginException()
-    {
-        return InvalidArgumentException::class;
-    }
-
-    protected function getInstanceOf()
-    {
-        return Filter\FilterInterface::class;
-    }
-
     /**
      * Overrides CommonPluginManagerTrait::aliasProvider
      *
@@ -64,5 +49,20 @@ class FilterPluginManagerCompatibilityTest extends TestCase
                     yield $alias => [$alias, $target];
             }
         }
+    }
+
+    protected static function getPluginManager(): AbstractPluginManager
+    {
+        return new FilterPluginManager(new ServiceManager());
+    }
+
+    protected function getV2InvalidPluginException()
+    {
+        return InvalidArgumentException::class;
+    }
+
+    protected function getInstanceOf()
+    {
+        return Filter\FilterInterface::class;
     }
 }

@@ -80,7 +80,7 @@ $logger->emerg('Emergency message');
 ## Destroying a Log
 
 If the `Logger` instance is no longer needed, set the variable containing it to
-`NULL` to destroy it.  This will automatically call the `shutdown()` instance
+`NULL` to destroy it. This will automatically call the `shutdown()` instance
 method of each attached writer before the `Logger` instance is destroyed.
 
 ```php

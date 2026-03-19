@@ -27,11 +27,6 @@ class AbstractTest extends TestCase
 {
     protected $writer;
 
-    protected function setUp(): void
-    {
-        $this->writer = new ConcreteWriter();
-    }
-
     public function testSetSimpleFormatterByName(): void
     {
         $instance  = $this->writer->setFormatter('simple');
@@ -67,7 +62,7 @@ class AbstractTest extends TestCase
     public function testFluentInterface(): void
     {
         $instance = $this->writer->addFilter(1)
-                                  ->setFormatter(new SimpleFormatter());
+            ->setFormatter(new SimpleFormatter());
 
         $this->assertInstanceOf(ConcreteWriter::class, $instance);
     }
@@ -301,5 +296,10 @@ class AbstractTest extends TestCase
 
         $this->writer->setFormatter(new SimpleFormatter());
         $this->assertTrue($m->invoke($this->writer));
+    }
+
+    protected function setUp(): void
+    {
+        $this->writer = new ConcreteWriter();
     }
 }

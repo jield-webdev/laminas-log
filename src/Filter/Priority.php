@@ -18,17 +18,17 @@ use function version_compare;
 class Priority implements FilterInterface
 {
     /** @var int */
-    protected $priority;
+    protected int $priority;
 
     /** @var string */
-    protected $operator;
+    protected mixed $operator;
 
     /**
      * Filter logging by $priority. By default, it will accept any log
      * event whose priority value is less than or equal to $priority.
      *
-     * @param  int|array|Traversable $priority Priority
-     * @param  string $operator Comparison operator
+     * @param int|array|Traversable $priority Priority
+     * @param string $operator Comparison operator
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($priority, $operator = null)
@@ -59,7 +59,7 @@ class Priority implements FilterInterface
      * @param array $event event data
      * @return bool accepted?
      */
-    public function filter(array $event)
+    public function filter(array $event): bool
     {
         return version_compare((string) $event['priority'], (string) $this->priority, $this->operator);
     }

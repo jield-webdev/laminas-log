@@ -9,8 +9,8 @@ interface ProcessorInterface
     /**
      * Processes a log message before it is given to the writers
      *
-     * @param  array $event
+     * @param array $event
      * @return array
      */
-    public function process(array $event);
+    public function process(array $event): array;
 }

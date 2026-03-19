@@ -8,7 +8,6 @@ use Laminas\Log\Exception;
 use Laminas\Log\Formatter\Simple as SimpleFormatter;
 use Laminas\Stdlib\ErrorHandler;
 use Traversable;
-
 use function chmod;
 use function dirname;
 use function fclose;
@@ -24,7 +23,6 @@ use function is_writable;
 use function iterator_to_array;
 use function sprintf;
 use function touch;
-
 use const PHP_EOL;
 
 class Stream extends AbstractWriter
@@ -34,28 +32,29 @@ class Stream extends AbstractWriter
      *
      * @var string
      */
-    protected $logSeparator = PHP_EOL;
+    protected string $logSeparator = PHP_EOL;
 
     /**
      * Holds the PHP stream to log to.
      *
-     * @var null|Stream
+     * @var resource|null
      */
     protected $stream;
 
     /**
      * Constructor
      *
-     * @param  string|resource|array|Traversable $streamOrUrl Stream or URL to open as a stream
-     * @param  string|null $mode Mode, only applicable if a URL is given
-     * @param  null|string $logSeparator Log separator string
-     * @param  null|int $filePermissions Permissions value, only applicable if a filename is given;
+     * @param string|resource|array|Traversable $streamOrUrl Stream or URL to open as a stream
+     * @param string|null $mode Mode, only applicable if a URL is given
+     * @param null|string $logSeparator Log separator string
+     * @param null|int $filePermissions Permissions value, only applicable if a filename is given;
      *     when $streamOrUrl is an array of options, use the 'chmod' key to specify this.
      * @throws Exception\InvalidArgumentException
      * @throws Exception\RuntimeException
      */
     public function __construct($streamOrUrl, $mode = null, $logSeparator = null, $filePermissions = null)
     {
+        $error = null;
         if ($streamOrUrl instanceof Traversable) {
             $streamOrUrl = iterator_to_array($streamOrUrl);
         }
@@ -73,7 +72,7 @@ class Stream extends AbstractWriter
             $mode = 'a';
         }
 
-        if (! is_string($streamOrUrl) && ! is_resource($streamOrUrl)) {
+        if (!is_string($streamOrUrl) && !is_resource($streamOrUrl)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Resource is not a stream nor a string; received "%s',
                 gettype($streamOrUrl)
@@ -98,16 +97,19 @@ class Stream extends AbstractWriter
             $this->stream = $streamOrUrl;
         } else {
             ErrorHandler::start();
-            if (isset($filePermissions) && ! file_exists($streamOrUrl) && is_writable(dirname($streamOrUrl))) {
+            if (isset($filePermissions) && !file_exists($streamOrUrl) && is_writable(dirname($streamOrUrl))) {
                 touch($streamOrUrl);
                 chmod($streamOrUrl, $filePermissions);
             }
 
-            $this->stream = fopen($streamOrUrl, $mode, false);
-            $error        = ErrorHandler::stop();
+            $stream = fopen($streamOrUrl, $mode, false);
+            $error  = ErrorHandler::stop();
+            if ($stream !== false) {
+                $this->stream = $stream;
+            }
         }
 
-        if (! $this->stream) {
+        if (!$this->stream) {
             throw new Exception\RuntimeException(sprintf(
                 '"%s" cannot be opened with mode "%s"',
                 $streamOrUrl,
@@ -125,38 +127,25 @@ class Stream extends AbstractWriter
     }
 
     /**
-     * Write a message to the log.
+     * Get log separator string
      *
-     * @param array $event event data
-     * @return void
-     * @throws Exception\RuntimeException
+     * @return string
      */
-    protected function doWrite(array $event)
+    public function getLogSeparator(): string
     {
-        $line = $this->formatter->format($event) . $this->logSeparator;
-        fwrite($this->stream, $line);
+        return $this->logSeparator;
     }
 
     /**
      * Set log separator string
      *
-     * @param  string $logSeparator
+     * @param string $logSeparator
      * @return Stream
      */
-    public function setLogSeparator($logSeparator)
+    public function setLogSeparator($logSeparator): static
     {
-        $this->logSeparator = (string) $logSeparator;
+        $this->logSeparator = (string)$logSeparator;
         return $this;
-    }
-
-    /**
-     * Get log separator string
-     *
-     * @return string
-     */
-    public function getLogSeparator()
-    {
-        return $this->logSeparator;
     }
 
     /**
@@ -164,10 +153,23 @@ class Stream extends AbstractWriter
      *
      * @return void
      */
-    public function shutdown()
+    public function shutdown(): void
     {
         if (is_resource($this->stream)) {
             fclose($this->stream);
         }
+    }
+
+    /**
+     * Write a message to the log.
+     *
+     * @param array $event event data
+     * @return void
+     * @throws Exception\RuntimeException
+     */
+    protected function doWrite(array $event): void
+    {
+        $line = $this->formatter->format($event) . $this->logSeparator;
+        fwrite($this->stream, $line);
     }
 }

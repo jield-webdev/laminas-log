@@ -7,6 +7,9 @@ namespace Laminas\Log\Formatter;
 use DateTime;
 
 use function print_r;
+use function sprintf;
+
+use const PHP_EOL;
 
 class ExceptionHandler implements FormatterInterface
 {
@@ -17,33 +20,32 @@ class ExceptionHandler implements FormatterInterface
      *
      * @var string
      */
-    protected $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
+    protected string $dateTimeFormat = self::DEFAULT_DATETIME_FORMAT;
 
     /**
      * This method formats the event for the PHP Exception
      *
      * @param array $event
-     * @return string
      */
-    public function format($event)
+    public function format($event): string
     {
         if (isset($event['timestamp']) && $event['timestamp'] instanceof DateTime) {
             $event['timestamp'] = $event['timestamp']->format($this->getDateTimeFormat());
         }
 
         $output = $event['timestamp'] . ' ' . $event['priorityName'] . ' ('
-                . $event['priority'] . ') ' . $event['message'] . ' in '
-                . $event['extra']['file'] . ' on line ' . $event['extra']['line'];
+            . $event['priority'] . ') ' . $event['message'] . ' in '
+            . $event['extra']['file'] . ' on line ' . $event['extra']['line'];
 
         if (! empty($event['extra']['trace'])) {
             $outputTrace = '';
             foreach ($event['extra']['trace'] as $trace) {
                 $outputTrace .= sprintf('File  : %s%s', $trace['file'], PHP_EOL)
-                              . sprintf('Line  : %s%s', $trace['line'], PHP_EOL)
-                              . sprintf('Func  : %s%s', $trace['function'], PHP_EOL)
-                              . sprintf('Class : %s%s', $trace['class'], PHP_EOL)
-                              . "Type  : " . $this->getType($trace['type']) . "\n"
-                              . "Args  : " . print_r($trace['args'], true) . "\n";
+                    . sprintf('Line  : %s%s', $trace['line'], PHP_EOL)
+                    . sprintf('Func  : %s%s', $trace['function'], PHP_EOL)
+                    . sprintf('Class : %s%s', $trace['class'], PHP_EOL)
+                    . "Type  : " . $this->getType($trace['type']) . "\n"
+                    . "Args  : " . print_r($trace['args'], true) . "\n";
             }
 
             $output .= "\n[Trace]\n" . $outputTrace;
@@ -55,7 +57,7 @@ class ExceptionHandler implements FormatterInterface
     /**
      * {@inheritDoc}
      */
-    public function getDateTimeFormat()
+    public function getDateTimeFormat(): string
     {
         return $this->dateTimeFormat;
     }
@@ -63,7 +65,7 @@ class ExceptionHandler implements FormatterInterface
     /**
      * {@inheritDoc}
      */
-    public function setDateTimeFormat($dateTimeFormat)
+    public function setDateTimeFormat($dateTimeFormat): FormatterInterface|static
     {
         $this->dateTimeFormat = (string) $dateTimeFormat;
         return $this;
@@ -73,13 +75,12 @@ class ExceptionHandler implements FormatterInterface
      * Get the type of a function
      *
      * @param string $type
-     * @return string
      */
-    protected function getType($type)
+    protected function getType($type): string
     {
         return match ($type) {
-            "::" => "static",
-            "->" => "method",
+            "::"    => "static",
+            "->"    => "method",
             default => $type,
         };
     }

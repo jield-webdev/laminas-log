@@ -12,11 +12,6 @@ class SuppressFilterTest extends TestCase
 {
     private SuppressFilter $filter;
 
-    protected function setUp(): void
-    {
-        $this->filter = new SuppressFilter();
-    }
-
     public function testSuppressIsInitiallyOff(): void
     {
         $this->assertTrue($this->filter->filter([]));
@@ -65,5 +60,10 @@ class SuppressFilterTest extends TestCase
         $this->assertTrue($this->filter->filter([]));
         $this->filter->suppress(true);
         $this->assertFalse($this->filter->filter([]));
+    }
+
+    protected function setUp(): void
+    {
+        $this->filter = new SuppressFilter();
     }
 }

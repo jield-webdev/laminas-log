@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Laminas\Log\Formatter;
 
 use DateTime;
-
 use function array_merge;
 use function is_array;
 use function is_object;
@@ -14,17 +13,18 @@ use function str_replace;
 
 class ErrorHandler extends Simple
 {
-    public const DEFAULT_FORMAT = '%timestamp% %priorityName% (%priority%) %message% (errno %extra[errno]%) '
-    . 'in %extra[file]% on line %extra[line]%';
+    public const DEFAULT_FORMAT
+        = '%timestamp% %priorityName% (%priority%) %message% (errno %extra[errno]%) '
+        . 'in %extra[file]% on line %extra[line]%';
 
     /**
      * This method formats the event for the PHP Error Handler.
      *
-     * @param  array $event
+     * @param array $event
      * @return string
      */
     #[\Override]
-    public function format($event)
+    public function format($event): string
     {
         $output = $this->format;
 
@@ -33,7 +33,7 @@ class ErrorHandler extends Simple
         }
 
         foreach ($this->buildReplacementsFromArray($event) as $name => $value) {
-            $output = str_replace(sprintf('%%%s%%', $name), (string) $value, $output);
+            $output = str_replace(sprintf('%%%s%%', $name), (string)$value, $output);
         }
 
         return $output;
@@ -47,7 +47,7 @@ class ErrorHandler extends Simple
      * @param string $key
      * @return array
      */
-    protected function buildReplacementsFromArray($event, $key = null)
+    protected function buildReplacementsFromArray($event, $key = null): array
     {
         $result = [];
         foreach ($event as $index => $value) {
@@ -56,10 +56,10 @@ class ErrorHandler extends Simple
                 continue;
             }
 
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 if ($key === null) {
                     $result[$nextIndex] = $value;
-                } elseif (! is_object($value) || method_exists($value, "__toString")) {
+                } elseif (!is_object($value) || method_exists($value, "__toString")) {
                     $result[$nextIndex] = $value;
                 }
             } else {

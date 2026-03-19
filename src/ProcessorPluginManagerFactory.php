@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Laminas\Log;
 
 use Laminas\ServiceManager\Config;
-use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Container\ContainerInterface;
 
@@ -16,16 +16,16 @@ class ProcessorPluginManagerFactory implements FactoryInterface
     /**
      * laminas-servicemanager v2 support for invocation options.
      *
-     * @param array
+     * @var array
      */
-    protected $creationOptions;
+    protected array $creationOptions = [];
 
     /**
      * {@inheritDoc}
      *
      * @return ProcessorPluginManager
      */
-    public function __invoke(ContainerInterface $container, $name, ?array $options = null)
+    public function __invoke(ContainerInterface $container, $name, ?array $options = null): ProcessorPluginManager
     {
         $pluginManager = new ProcessorPluginManager($container, $options ?: []);
 
@@ -58,7 +58,7 @@ class ProcessorPluginManagerFactory implements FactoryInterface
      *
      * @return ProcessorPluginManager
      */
-    public function createService(ServiceLocatorInterface $container, $name = null, $requestedName = null)
+    public function createService(ServiceLocatorInterface $container, $name = null, $requestedName = null): ProcessorPluginManager
     {
         return $this($container, $requestedName ?: ProcessorPluginManager::class, $this->creationOptions);
     }
@@ -67,9 +67,8 @@ class ProcessorPluginManagerFactory implements FactoryInterface
      * laminas-servicemanager v2 support for invocation options.
      *
      * @param array $options
-     * @return void
      */
-    public function setCreationOptions(array $options)
+    public function setCreationOptions(array $options): void
     {
         $this->creationOptions = $options;
     }

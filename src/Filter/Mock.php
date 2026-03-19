@@ -11,15 +11,14 @@ class Mock implements FilterInterface
      *
      * @var array
      */
-    public $events = [];
+    public array $events = [];
 
     /**
      * Returns TRUE to accept the message
      *
      * @param array $event event data
-     * @return bool
      */
-    public function filter(array $event)
+    public function filter(array $event): bool
     {
         $this->events[] = $event;
         return true;

@@ -16,12 +16,12 @@ use function sprintf;
 class SuppressFilter implements FilterInterface
 {
     /** @var bool */
-    protected $accept = true;
+    protected bool $accept = true;
 
     /**
      * This is a simple boolean filter.
      *
-     * @param int|array|Traversable $suppress
+     * @param bool|array|Traversable $suppress
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($suppress = false)
@@ -49,10 +49,9 @@ class SuppressFilter implements FilterInterface
      * Call suppress(true) to suppress all log events.
      * Call suppress(false) to accept all log events.
      *
-     * @param  bool $suppress Should all log events be suppressed?
-     * @return void
+     * @param bool $suppress Should all log events be suppressed?
      */
-    public function suppress($suppress)
+    public function suppress($suppress): void
     {
         $this->accept = ! (bool) $suppress;
     }
@@ -63,7 +62,7 @@ class SuppressFilter implements FilterInterface
      * @param array $event event data
      * @return bool accepted?
      */
-    public function filter(array $event)
+    public function filter(array $event): bool
     {
         return $this->accept;
     }

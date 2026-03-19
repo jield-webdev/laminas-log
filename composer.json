@@ -8,7 +8,6 @@
     "logging"
   ],
   "homepage": "https://laminas.dev",
-  "abandoned": "monolog/monolog",
   "support": {
     "docs": "https://docs.laminas.dev/laminas-log/",
     "issues": "https://github.com/laminas/laminas-log/issues",
@@ -33,9 +32,9 @@
     }
   },
   "require": {
-    "php": "~8.3.0 || ~8.4.0",
-    "laminas/laminas-servicemanager": "^3.21.0",
-    "laminas/laminas-stdlib": "^3.0",
+    "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+    "laminas/laminas-servicemanager": "^3.23.0",
+    "laminas/laminas-stdlib": "^3.21",
     "psr/log": "^3"
   },
   "require-dev": {
@@ -44,10 +43,9 @@
     "ext-xml": "*",
     "firephp/firephp-core": "^0.5.3",
     "laminas/laminas-coding-standard": "~2.3.0",
-    "laminas/laminas-db": "^2.18",
     "laminas/laminas-escaper": "^2.13",
     "laminas/laminas-filter": "^2.33",
-    "laminas/laminas-mail": "^2.24",
+    "plesk/laminas-mail": "^2.24",
     "laminas/laminas-validator": "^2.43",
     "mikey179/vfsstream": "^1.6.7",
     "phpspec/prophecy-phpunit": "^2.0",
@@ -61,7 +59,6 @@
     "ext-mongodb": "mongodb extension to use MongoDB writer",
     "laminas/laminas-db": "Laminas\\Db component to use the database log writer",
     "laminas/laminas-escaper": "Laminas\\Escaper component, for use in the XML log formatter",
-    "laminas/laminas-mail": "Laminas\\Mail component to use the email log writer",
     "laminas/laminas-validator": "Laminas\\Validator component to block invalid log messages"
   },
   "autoload": {
@@ -85,7 +82,8 @@
     "cs-check": "phpcs",
     "cs-fix": "phpcbf",
     "test": "phpunit --colors=always",
-    "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
+    "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+    "phpstan": "./vendor/bin/phpstan --memory-limit=2G"
   },
   "conflict": {
     "zendframework/zend-log": "*"

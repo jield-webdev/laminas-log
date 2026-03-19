@@ -9,11 +9,9 @@ use Laminas\Log\Formatter\Xml as XmlFormatter;
 use LaminasTest\Log\TestAsset\SerializableObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-
 use function simplexml_load_string;
 use function sprintf;
 use function substr_count;
-
 use const PHP_EOL;
 
 class XmlTest extends TestCase
@@ -26,7 +24,7 @@ class XmlTest extends TestCase
 
         $this->assertStringContainsString($date->format('c'), $line);
         $this->assertStringContainsString('foo', $line);
-        $this->assertStringContainsString((string) 42, $line);
+        $this->assertStringContainsString((string)42, $line);
     }
 
     public function testConfiguringElementMapping(): void
@@ -195,7 +193,7 @@ class XmlTest extends TestCase
         ];
         $expected  = '<logEntry><timestamp>2001-01-01T12:00:00-06:00</timestamp><message>test</message>'
             . '<priority>1</priority><priorityName>CRIT</priorityName></logEntry>';
-        $expected .= "\n" . PHP_EOL;
+        $expected  .= "\n" . PHP_EOL;
         $this->assertEquals($expected, $formatter->format($event));
     }
 
@@ -215,7 +213,7 @@ class XmlTest extends TestCase
             ],
         ];
 
-        $expected  = '<logEntry><timestamp>2001-01-01T12:00:00-06:00</timestamp><message>test</message>'
+        $expected = '<logEntry><timestamp>2001-01-01T12:00:00-06:00</timestamp><message>test</message>'
             . '<priority>1</priority><priorityName>CRIT</priorityName><extra><test>one</test>'
             . '<bar>foo</bar></extra></logEntry>';
         $expected .= "\n" . PHP_EOL;
@@ -228,13 +226,13 @@ class XmlTest extends TestCase
 
         $d = new DateTime('2001-01-01T12:00:00-06:00');
 
-        $event     = [
+        $event    = [
             'timestamp'    => $d,
             'message'      => 'test',
             'priority'     => 1,
             'priorityName' => 'CRIT',
             'extra'        => [
-                'test'        => [
+                'test'                => [
                     'one',
                     'two' => [
                         'three' => [
@@ -243,19 +241,19 @@ class XmlTest extends TestCase
                         'five'  => [''],
                     ],
                 ],
-                '1111'        => '2222',
-                'test_null'   => null,
-                'test_int'    => 14,
-                'test_object' => new stdClass(),
+                '1111'                => '2222',
+                'test_null'           => null,
+                'test_int'            => 14,
+                'test_object'         => new stdClass(),
                 new SerializableObject(),
                 'serializable_object' => new SerializableObject(),
                 null,
-                'test_empty_array' => [],
-                'bar'              => 'foo',
+                'test_empty_array'    => [],
+                'bar'                 => 'foo',
                 'foobar',
             ],
         ];
-        $expected  = '<logEntry><timestamp>2001-01-01T12:00:00-06:00</timestamp><message>test</message>'
+        $expected = '<logEntry><timestamp>2001-01-01T12:00:00-06:00</timestamp><message>test</message>'
             . '<priority>1</priority><priorityName>CRIT</priorityName><extra><test><one/><two><three><four>four</four>'
             . '</three><five/></two></test><test_null/><test_int>14</test_int><test_object>'
             . '"Object" of type stdClass does not support __toString() method</test_object><serializable_object>'
@@ -277,7 +275,7 @@ class XmlTest extends TestCase
             'priority'     => 1,
             'priorityName' => 'CRIT',
             'extra'        => [
-                'test'        => [
+                'test'                => [
                     'one',
                     'two' => [
                         'three' => [
@@ -286,15 +284,15 @@ class XmlTest extends TestCase
                         'five'  => [''],
                     ],
                 ],
-                '1111'        => '2222',
-                'test_null'   => null,
-                'test_int'    => 14,
-                'test_object' => new stdClass(),
+                '1111'                => '2222',
+                'test_null'           => null,
+                'test_int'            => 14,
+                'test_object'         => new stdClass(),
                 new SerializableObject(),
                 'serializable_object' => new SerializableObject(),
                 null,
-                'test_empty_array' => [],
-                'bar'              => 'foo',
+                'test_empty_array'    => [],
+                'bar'                 => 'foo',
                 'foobar',
             ],
         ];

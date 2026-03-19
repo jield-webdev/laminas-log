@@ -13,7 +13,6 @@ use Laminas\Log\Writer\Stream as StreamWriter;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
-
 use function fclose;
 use function fopen;
 use function rewind;
@@ -21,7 +20,6 @@ use function sprintf;
 use function stream_get_contents;
 use function xml_parser_create;
 use function xml_parser_free;
-
 use const PHP_EOL;
 
 class StreamWriterTest extends TestCase
@@ -29,18 +27,8 @@ class StreamWriterTest extends TestCase
     /**
      * Flag used to prevent running tests that require full isolation
      */
-    private static $ranSuite = false;
+    private static             $ranSuite = false;
     private vfsStreamDirectory $root;
-
-    protected function setUp(): void
-    {
-        $this->root = vfsStream::setup('laminas-log');
-    }
-
-    protected function tearDown(): void
-    {
-        self::$ranSuite = true;
-    }
 
     public function testConstructorThrowsWhenResourceIsNotStream(): void
     {
@@ -277,5 +265,15 @@ class StreamWriterTest extends TestCase
         $file = $this->root->url() . '/foo';
         new StreamWriter($file, null, null, 0755);
         $this->assertEquals(0755, $this->root->getChild('foo')->getPermissions());
+    }
+
+    protected function setUp(): void
+    {
+        $this->root = vfsStream::setup('laminas-log');
+    }
+
+    protected function tearDown(): void
+    {
+        self::$ranSuite = true;
     }
 }

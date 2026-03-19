@@ -27,30 +27,6 @@ class MailTest extends TestCase
     /** @var Logger */
     protected $log;
 
-    protected function setUp(): void
-    {
-        $message   = new MailMessage();
-        $transport = new Transport\File();
-        $options   = new Transport\FileOptions([
-            'path'     => __DIR__,
-            'callback' => function (Transport\File $transport) {
-                return MailTest::FILENAME;
-            },
-        ]);
-        $transport->setOptions($options);
-
-        $this->writer = new MailWriter($message, $transport);
-        $this->log    = new Logger();
-        $this->log->addWriter($this->writer);
-    }
-
-    protected function tearDown(): void
-    {
-        if (file_exists(__DIR__ . '/' . self::FILENAME)) {
-            unlink(__DIR__ . '/' . self::FILENAME);
-        }
-    }
-
     /**
      * Tests normal logging, but with multiple messages for a level.
      */
@@ -85,7 +61,7 @@ class MailTest extends TestCase
         $options   = new Transport\FileOptions([
             'path'     => __DIR__,
             'callback' => function (Transport\File $transport) {
-                    return MailTest::FILENAME;
+                return MailTest::FILENAME;
             },
         ]);
         $transport->setOptions($options);
@@ -184,5 +160,29 @@ class MailTest extends TestCase
         };
 
         $this->assertInstanceOf(Smtp::class, $writer->getTransport());
+    }
+
+    protected function setUp(): void
+    {
+        $message   = new MailMessage();
+        $transport = new Transport\File();
+        $options   = new Transport\FileOptions([
+            'path'     => __DIR__,
+            'callback' => function (Transport\File $transport) {
+                return MailTest::FILENAME;
+            },
+        ]);
+        $transport->setOptions($options);
+
+        $this->writer = new MailWriter($message, $transport);
+        $this->log    = new Logger();
+        $this->log->addWriter($this->writer);
+    }
+
+    protected function tearDown(): void
+    {
+        if (file_exists(__DIR__ . '/' . self::FILENAME)) {
+            unlink(__DIR__ . '/' . self::FILENAME);
+        }
     }
 }

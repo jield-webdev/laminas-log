@@ -11,5 +11,5 @@ interface LogFormatterProviderInterface
      *
      * @return array
      */
-    public function getLogFormatterConfig();
+    public function getLogFormatterConfig(): array;
 }

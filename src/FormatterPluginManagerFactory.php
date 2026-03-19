@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Laminas\Log;
 
 use Laminas\ServiceManager\Config;
-use Laminas\ServiceManager\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 use function is_array;
@@ -14,18 +13,11 @@ use function is_array;
 class FormatterPluginManagerFactory implements FactoryInterface
 {
     /**
-     * laminas-servicemanager v2 support for invocation options.
-     *
-     * @param array
-     */
-    protected $creationOptions;
-
-    /**
      * {@inheritDoc}
      *
      * @return FormatterPluginManager
      */
-    public function __invoke(ContainerInterface $container, $name, ?array $options = null)
+    public function __invoke(ContainerInterface $container, $name, ?array $options = null): FormatterPluginManager
     {
         $pluginManager = new FormatterPluginManager($container, $options ?: []);
 
@@ -51,26 +43,5 @@ class FormatterPluginManagerFactory implements FactoryInterface
         (new Config($config['log_formatters']))->configureServiceManager($pluginManager);
 
         return $pluginManager;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return FormatterPluginManager
-     */
-    public function createService(ServiceLocatorInterface $container, $name = null, $requestedName = null)
-    {
-        return $this($container, $requestedName ?: FormatterPluginManager::class, $this->creationOptions);
-    }
-
-    /**
-     * laminas-servicemanager v2 support for invocation options.
-     *
-     * @param array $options
-     * @return void
-     */
-    public function setCreationOptions(array $options)
-    {
-        $this->creationOptions = $options;
     }
 }

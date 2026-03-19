@@ -8,7 +8,6 @@ use Laminas\Log\Exception;
 use Laminas\Log\Formatter\Simple as SimpleFormatter;
 use Laminas\Log\Logger;
 use Traversable;
-
 use function array_key_exists;
 use function closelog;
 use function constant;
@@ -19,7 +18,6 @@ use function iterator_to_array;
 use function openlog;
 use function stripos;
 use function syslog;
-
 use const LOG_ALERT;
 use const LOG_CRIT;
 use const LOG_DEBUG;
@@ -30,7 +28,7 @@ use const LOG_NOTICE;
 use const LOG_PID;
 use const LOG_USER;
 use const LOG_WARNING;
-use const PHP_OS;
+use const PHP_OS_FAMILY;
 
 /**
  * Writes log messages to syslog
@@ -38,67 +36,56 @@ use const PHP_OS;
 class Syslog extends AbstractWriter
 {
     /**
+     * Last application name set by a syslog-writer instance
+     */
+    protected static string $lastApplication;
+
+    /**
+     * Last facility name set by a syslog-writer instance
+     */
+    protected static int $lastFacility;
+
+    /**
      * Maps Laminas\Log priorities to PHP's syslog priorities
      *
      * @var array
      */
-    protected $priorities = [
-        Logger::EMERG  => LOG_EMERG,
-        Logger::ALERT  => LOG_ALERT,
-        Logger::CRIT   => LOG_CRIT,
-        Logger::ERR    => LOG_ERR,
-        Logger::WARN   => LOG_WARNING,
-        Logger::NOTICE => LOG_NOTICE,
-        Logger::INFO   => LOG_INFO,
-        Logger::DEBUG  => LOG_DEBUG,
-    ];
+    protected array $priorities
+        = [
+            Logger::EMERG  => LOG_EMERG,
+            Logger::ALERT  => LOG_ALERT,
+            Logger::CRIT   => LOG_CRIT,
+            Logger::ERR    => LOG_ERR,
+            Logger::WARN   => LOG_WARNING,
+            Logger::NOTICE => LOG_NOTICE,
+            Logger::INFO   => LOG_INFO,
+            Logger::DEBUG  => LOG_DEBUG,
+        ];
 
     /**
      * The default log priority - for unmapped custom priorities
-     *
-     * @var string
      */
-    protected $defaultPriority = LOG_NOTICE;
-
-    /**
-     * Last application name set by a syslog-writer instance
-     *
-     * @var string
-     */
-    protected static $lastApplication;
-
-    /**
-     * Last facility name set by a syslog-writer instance
-     *
-     * @var string
-     */
-    protected static $lastFacility;
+    protected int $defaultPriority = LOG_NOTICE;
 
     /**
      * Application name used by this syslog-writer instance
-     *
-     * @var string
      */
-    protected $appName = 'Laminas\Log';
+    protected string $appName = 'Laminas\Log';
 
     /**
      * Facility used by this syslog-writer instance
-     *
-     * @var int
      */
-    protected $facility = LOG_USER;
+    protected int $facility = LOG_USER;
 
     /**
      * Types of program available to logging of message
-     *
-     * @var array
      */
-    protected $validFacilities = [];
+    protected array $validFacilities = [];
 
     /**
      * Constructor
      *
-     * @param  array $params Array of options; may include "application" and "facility" keys
+     * @param array $params Array of options; may include "application" and "facility" keys
      */
     public function __construct($params = null)
     {
@@ -131,11 +118,48 @@ class Syslog extends AbstractWriter
     }
 
     /**
+     * Set syslog facility
+     *
+     * @param int $facility Syslog facility
+     * @return Syslog
+     * @throws Exception\InvalidArgumentException For invalid log facility.
+     */
+    public function setFacility($facility): static
+    {
+        if ($this->facility === $facility) {
+            return $this;
+        }
+
+        if ($this->validFacilities === []) {
+            $this->initializeValidFacilities();
+        }
+
+        if (!in_array($facility, $this->validFacilities)) {
+            throw new Exception\InvalidArgumentException(
+                'Invalid log facility provided; please see http://php.net/openlog for a list of valid facility values'
+            );
+        }
+
+        if (
+            0 === stripos(PHP_OS_FAMILY, 'WIN')
+            && ($facility !== LOG_USER)
+        ) {
+            throw new Exception\InvalidArgumentException(
+                'Only LOG_USER is a valid log facility on Windows'
+            );
+        }
+
+        $this->facility = $facility;
+        $this->initializeSyslog();
+        return $this;
+    }
+
+    /**
      * Initialize values facilities
      *
      * @return void
      */
-    protected function initializeValidFacilities()
+    protected function initializeValidFacilities(): void
     {
         $constants = [
             'LOG_AUTH',
@@ -171,48 +195,11 @@ class Syslog extends AbstractWriter
      *
      * @return void
      */
-    protected function initializeSyslog()
+    protected function initializeSyslog(): void
     {
         static::$lastApplication = $this->appName;
         static::$lastFacility    = $this->facility;
         openlog($this->appName, LOG_PID, $this->facility);
-    }
-
-    /**
-     * Set syslog facility
-     *
-     * @param int $facility Syslog facility
-     * @return Syslog
-     * @throws Exception\InvalidArgumentException For invalid log facility.
-     */
-    public function setFacility($facility)
-    {
-        if ($this->facility === $facility) {
-            return $this;
-        }
-
-        if ($this->validFacilities === []) {
-            $this->initializeValidFacilities();
-        }
-
-        if (! in_array($facility, $this->validFacilities)) {
-            throw new Exception\InvalidArgumentException(
-                'Invalid log facility provided; please see http://php.net/openlog for a list of valid facility values'
-            );
-        }
-
-        if (
-            0 === stripos(PHP_OS, 'WIN')
-            && ($facility !== LOG_USER)
-        ) {
-            throw new Exception\InvalidArgumentException(
-                'Only LOG_USER is a valid log facility on Windows'
-            );
-        }
-
-        $this->facility = $facility;
-        $this->initializeSyslog();
-        return $this;
     }
 
     /**
@@ -221,7 +208,7 @@ class Syslog extends AbstractWriter
      * @param string $appName Application name
      * @return Syslog
      */
-    public function setApplicationName($appName)
+    public function setApplicationName($appName): static
     {
         if ($this->appName === $appName) {
             return $this;
@@ -237,7 +224,7 @@ class Syslog extends AbstractWriter
      *
      * @return void
      */
-    public function shutdown()
+    public function shutdown(): void
     {
         closelog();
     }
@@ -248,7 +235,7 @@ class Syslog extends AbstractWriter
      * @param array $event event data
      * @return void
      */
-    protected function doWrite(array $event)
+    protected function doWrite(array $event): void
     {
         if (array_key_exists($event['priority'], $this->priorities)) {
             $priority = $this->priorities[$event['priority']];

@@ -1,36 +1,48 @@
-name: "Continuous Integration"
+name: PHP Composer
 
 on:
-  pull_request:
   push:
     branches:
-      - '[0-9]+.[0-9]+.x'
-      - 'refs/pull/*'
-    tags:
+      - develop
+      - allow-php85
+  pull_request:
 
 jobs:
-  matrix:
-    name: Generate job matrix
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.matrix.outputs.matrix }}
-    steps:
-      - name: Gather CI configuration
-        id: matrix
-        uses: laminas/laminas-ci-matrix-action@v1
-
-  qa:
-    name: QA Checks
-    needs: [matrix]
-    runs-on: ${{ matrix.operatingSystem }}
+  build:
     strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+      matrix:
+        dependencies:
+          - locked
+          - highest
+        php:
+          - 8.3
+          - 8.4
+          - 8.5
+        include:
+          - php-version: 8.5
+            composer-options: "--ignore-platform-reqs"
+
+    runs-on: ubuntu-latest
+
     steps:
-      - name: ${{ matrix.name }}
-        uses: laminas/laminas-continuous-integration-action@v1
+      - name: "Checkout code"
+        uses: actions/checkout@v6
+
+      - name: "Install PHP"
+        uses: shivammathur/setup-php@v2
         with:
-          job: ${{ matrix.job }}
-    services:
-      mongodb:
-        image: mongo:4.4
+          coverage: "xdebug"
+          php-version: "${{ matrix.php }}"
+          ini-values: memory_limit=-1
+
+      - name: "Install composer and dependencies"
+        uses: ramsey/composer-install@v4
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: ${{ matrix.composer-options }}
+
+      - name: Run Lint Checker suite
+        run: composer php-lint
+
+      - name: PHPStan test
+        run: composer phpstan

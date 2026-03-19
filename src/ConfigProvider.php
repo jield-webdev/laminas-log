@@ -11,7 +11,7 @@ class ConfigProvider
      *
      * @return array
      */
-    public function __invoke()
+    public function __invoke(): array
     {
         return [
             'dependencies' => $this->getDependencyConfig(),
@@ -23,15 +23,9 @@ class ConfigProvider
      *
      * @return array
      */
-    public function getDependencyConfig()
+    public function getDependencyConfig(): array
     {
         return [
-            // Legacy Zend Framework aliases
-            'aliases'            => [
-                //phpcs:disable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
-                \Zend\Log\Logger::class => Logger::class,
-                //phpcs:enable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
-            ],
             'abstract_factories' => [
                 LoggerAbstractServiceFactory::class,
                 PsrLoggerAbstractAdapterFactory::class,

@@ -18,11 +18,6 @@ class FirePhpTest extends TestCase
 {
     protected $firephp;
 
-    protected function setUp(): void
-    {
-        $this->firephp = new MockFirePhp();
-    }
-
     /**
      * Test get FirePhp
      */
@@ -107,5 +102,10 @@ class FirePhpTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('You must pass a valid FirePhp\FirePhpInterface');
         new FirePhp(new stdClass());
+    }
+
+    protected function setUp(): void
+    {
+        $this->firephp = new MockFirePhp();
     }
 }

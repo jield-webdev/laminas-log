@@ -6,6 +6,8 @@ namespace Laminas\Log;
 
 use Laminas\Log\Filter\LogFilterProviderInterface;
 use Laminas\Log\Formatter\LogFormatterProviderInterface;
+use Laminas\ModuleManager\Feature\LogProcessorProviderInterface;
+use Laminas\ModuleManager\Feature\LogWriterProviderInterface;
 use Laminas\ModuleManager\ModuleManager;
 
 class Module
@@ -13,7 +15,7 @@ class Module
     /**
      * Return default laminas-log configuration for laminas-mvc applications.
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         $provider = new ConfigProvider();
 
@@ -26,9 +28,8 @@ class Module
      * Register specifications for all laminas-log plugin managers with the ServiceListener.
      *
      * @param ModuleManager $moduleManager
-     * @return void
      */
-    public function init($moduleManager)
+    public function init($moduleManager): void
     {
         $event           = $moduleManager->getEvent();
         $container       = $event->getParam('ServiceManager');
@@ -37,14 +38,14 @@ class Module
         $serviceListener->addServiceManager(
             'LogProcessorManager',
             'log_processors',
-            \Laminas\ModuleManager\Feature\LogProcessorProviderInterface::class,
+            LogProcessorProviderInterface::class,
             'getLogProcessorConfig'
         );
 
         $serviceListener->addServiceManager(
             'LogWriterManager',
             'log_writers',
-            \Laminas\ModuleManager\Feature\LogWriterProviderInterface::class,
+            LogWriterProviderInterface::class,
             'getLogWriterConfig'
         );
 

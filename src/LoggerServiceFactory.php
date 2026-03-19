@@ -7,17 +7,14 @@ namespace Laminas\Log;
 use ArrayAccess;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidArgumentException;
-use Laminas\ServiceManager\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-use function get_class;
-use function gettype;
+use function get_debug_type;
 use function is_array;
 use function is_iterable;
-use function is_object;
 use function is_string;
 use function iterator_to_array;
 
@@ -27,15 +24,12 @@ use function iterator_to_array;
 class LoggerServiceFactory implements FactoryInterface
 {
     /**
-     * Factory for laminas-servicemanager v3.
-     *
      * @param string $requestedName
      * @param null|array $options
-     * @return Logger
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): Logger
     {
         // Configure the logger
         $config    = $container->get('config');
@@ -47,26 +41,12 @@ class LoggerServiceFactory implements FactoryInterface
     }
 
     /**
-     * Factory for laminas-servicemanager v2.
-     *
-     * Proxies to `__invoke()`.
-     *
-     * @return Logger
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        return $this($serviceLocator, Logger::class);
-    }
-
-    /**
      * Process and return the configuration from the container.
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    protected function processConfig(array &$config, ContainerInterface $services)
+    protected function processConfig(array &$config, ContainerInterface $services): void
     {
         if (
             isset($config['writer_plugin_manager'])
@@ -119,7 +99,7 @@ class LoggerServiceFactory implements FactoryInterface
             if (
                 isset($writerConfig['name'])
                 && ('db' === $writerConfig['name']
-                    || Writer\Db::class === $writerConfig['name']
+                    || 'Laminas\Log\Writer\Db' === $writerConfig['name']
                     || 'laminaslogwriterdb' === $writerConfig['name']
                 )
                 && isset($writerConfig['options']['db'])
@@ -136,7 +116,7 @@ class LoggerServiceFactory implements FactoryInterface
             if (
                 isset($writerConfig['name'])
                 && ('mongo' === $writerConfig['name']
-                    || Writer\Mongo::class === $writerConfig['name']
+                    || 'Laminas\Log\Writer\Mongo' === $writerConfig['name']
                     || 'laminaslogwritermongo' === $writerConfig['name']
                 )
                 && isset($writerConfig['options']['mongo'])
@@ -153,7 +133,7 @@ class LoggerServiceFactory implements FactoryInterface
             if (
                 isset($writerConfig['name'])
                 && ('mongodb' === $writerConfig['name']
-                    || Writer\MongoDB::class === $writerConfig['name']
+                    || 'Laminas\Log\Writer\MongoDB' === $writerConfig['name']
                     || 'laminaslogwritermongodb' === $writerConfig['name']
                 )
                 && isset($writerConfig['options']['manager'])

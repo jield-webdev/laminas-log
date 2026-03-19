@@ -34,28 +34,6 @@ class LoggerServiceFactoryTest extends TestCase
 {
     protected ServiceLocatorInterface $serviceManager;
 
-    /**
-     * Set up LoggerServiceFactory and loggers configuration.
-     */
-    protected function setUp(): void
-    {
-        $this->serviceManager = new ServiceManager();
-        $config               = new Config([
-            'aliases'   => [
-                'Laminas\Log' => Logger::class,
-            ],
-            'factories' => [
-                Logger::class => LoggerServiceFactory::class,
-            ],
-            'services'  => [
-                'config' => [
-                    'log' => [],
-                ],
-            ],
-        ]);
-        $config->configureServiceManager($this->serviceManager);
-    }
-
     public function providerValidLoggerService(): array
     {
         return [
@@ -350,5 +328,27 @@ class LoggerServiceFactoryTest extends TestCase
             'string' => ['invalid config', 'string'],
             'object' => [new stdClass(), 'stdClass'],
         ];
+    }
+
+    /**
+     * Set up LoggerServiceFactory and loggers configuration.
+     */
+    protected function setUp(): void
+    {
+        $this->serviceManager = new ServiceManager();
+        $config               = new Config([
+            'aliases'   => [
+                'Laminas\Log' => Logger::class,
+            ],
+            'factories' => [
+                Logger::class => LoggerServiceFactory::class,
+            ],
+            'services'  => [
+                'config' => [
+                    'log' => [],
+                ],
+            ],
+        ]);
+        $config->configureServiceManager($this->serviceManager);
     }
 }

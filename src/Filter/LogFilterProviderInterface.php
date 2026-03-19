@@ -11,5 +11,5 @@ interface LogFilterProviderInterface
      *
      * @return array
      */
-    public function getLogFilterConfig();
+    public function getLogFilterConfig(): array;
 }

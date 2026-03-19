@@ -6,7 +6,6 @@ namespace Laminas\Log\Formatter;
 
 use Laminas\Log\Exception;
 use Traversable;
-
 use function array_key_exists;
 use function count;
 use function is_array;
@@ -14,7 +13,6 @@ use function is_string;
 use function iterator_to_array;
 use function rtrim;
 use function str_replace;
-use function strpos;
 
 class Simple extends Base
 {
@@ -25,7 +23,7 @@ class Simple extends Base
      *
      * @var string
      */
-    protected $format;
+    protected mixed $format;
 
     /**
      * @see http://php.net/manual/en/function.date.php
@@ -45,7 +43,7 @@ class Simple extends Base
             $format         = $format['format'] ?? null;
         }
 
-        if (isset($format) && ! is_string($format)) {
+        if (isset($format) && !is_string($format)) {
             throw new Exception\InvalidArgumentException('Format must be a string');
         }
 
@@ -61,7 +59,7 @@ class Simple extends Base
      * @return string formatted line to write to the log
      */
     #[\Override]
-    public function format($event)
+    public function format($event): string
     {
         $output = $this->format;
 
@@ -74,7 +72,7 @@ class Simple extends Base
                 $value = '';
             }
 
-            $output = str_replace(sprintf('%%%s%%', $name), (string) $value, $output);
+            $output = str_replace(sprintf('%%%s%%', $name), (string)$value, $output);
         }
 
         if (

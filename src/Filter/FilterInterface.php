@@ -12,5 +12,5 @@ interface FilterInterface
      * @param array $event event data
      * @return bool accepted?
      */
-    public function filter(array $event);
+    public function filter(array $event): bool;
 }

@@ -8,10 +8,8 @@ use Laminas\Log\Exception;
 use Laminas\Validator\ValidatorInterface as LaminasValidator;
 use Traversable;
 
-use function get_class;
-use function gettype;
+use function get_debug_type;
 use function is_array;
-use function is_object;
 use function iterator_to_array;
 use function sprintf;
 
@@ -22,12 +20,12 @@ class Validator implements FilterInterface
      *
      * @var LaminasValidator
      */
-    protected $validator;
+    protected LaminasValidator|Traversable $validator;
 
     /**
      * Filter out any log messages not matching the validator
      *
-     * @param  LaminasValidator|array|Traversable $validator
+     * @param LaminasValidator|array|Traversable $validator
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($validator)
@@ -54,9 +52,8 @@ class Validator implements FilterInterface
      * Returns TRUE to accept the message, FALSE to block it.
      *
      * @param array $event event data
-     * @return bool
      */
-    public function filter(array $event)
+    public function filter(array $event): bool
     {
         return $this->validator->isValid($event['message']);
     }

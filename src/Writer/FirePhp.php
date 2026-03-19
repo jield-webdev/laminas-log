@@ -9,7 +9,6 @@ use Laminas\Log\Exception;
 use Laminas\Log\Formatter\FirePhp as FirePhpFormatter;
 use Laminas\Log\Logger;
 use Traversable;
-
 use function class_exists;
 use function is_array;
 use function iterator_to_array;
@@ -21,7 +20,7 @@ class FirePhp extends AbstractWriter
      *
      * @var FirePhp\FirePhpInterface
      */
-    protected $firephp;
+    protected ?FirePhp\FirePhpInterface $firephp;
 
     /**
      * Initializes a new instance of this class.
@@ -40,7 +39,7 @@ class FirePhp extends AbstractWriter
             $instance = $instance['instance'] ?? null;
         }
 
-        if ($instance !== null && ! $instance instanceof FirePhp\FirePhpInterface) {
+        if ($instance !== null && !$instance instanceof FirePhp\FirePhpInterface) {
             throw new Exception\InvalidArgumentException('You must pass a valid FirePhp\FirePhpInterface');
         }
 
@@ -51,14 +50,14 @@ class FirePhp extends AbstractWriter
     /**
      * Write a message to the log.
      *
-     * @param  array $event event data
+     * @param array $event event data
      * @return void
      */
-    protected function doWrite(array $event)
+    protected function doWrite(array $event): void
     {
         $firephp = $this->getFirePhp();
 
-        if (! $firephp->getEnabled()) {
+        if (!$firephp->getEnabled()) {
             return;
         }
 
@@ -66,10 +65,10 @@ class FirePhp extends AbstractWriter
 
         match ($event['priority']) {
             Logger::EMERG, Logger::ALERT, Logger::CRIT, Logger::ERR => $firephp->error($line, $label),
-            Logger::WARN => $firephp->warn($line, $label),
-            Logger::NOTICE, Logger::INFO => $firephp->info($line, $label),
-            Logger::DEBUG => $firephp->trace($line),
-            default => $firephp->log($line, $label),
+            Logger::WARN                                            => $firephp->warn($line, $label),
+            Logger::NOTICE, Logger::INFO                            => $firephp->info($line, $label),
+            Logger::DEBUG                                           => $firephp->trace($line),
+            default                                                 => $firephp->log($line, $label),
         };
     }
 
@@ -79,11 +78,11 @@ class FirePhp extends AbstractWriter
      * @return FirePhp\FirePhpInterface
      * @throws Exception\RuntimeException
      */
-    public function getFirePhp()
+    public function getFirePhp(): ?FirePhp\FirePhpInterface
     {
         if (
-            ! $this->firephp instanceof FirePhp\FirePhpInterface
-            && ! class_exists('FirePHP')
+            !$this->firephp instanceof FirePhp\FirePhpInterface
+            && !class_exists('FirePHP')
         ) {
             // No FirePHP instance, and no way to create one
             throw new Exception\RuntimeException('FirePHP Class not found');
@@ -92,7 +91,7 @@ class FirePhp extends AbstractWriter
         // Remember: class names in strings are absolute; thus the class_exists
         // here references the canonical name for the FirePHP class
         if (
-            ! $this->firephp instanceof FirePhp\FirePhpInterface
+            !$this->firephp instanceof FirePhp\FirePhpInterface
             && class_exists('FirePHP')
         ) {
             // FirePHPService is an alias for FirePHP; otherwise the class
@@ -106,10 +105,10 @@ class FirePhp extends AbstractWriter
     /**
      * Sets the FirePhpInterface instance that is used for logging.
      *
-     * @param  FirePhp\FirePhpInterface $instance A FirePhpInterface instance to set.
+     * @param FirePhp\FirePhpInterface $instance A FirePhpInterface instance to set.
      * @return FirePhp
      */
-    public function setFirePhp(FirePhp\FirePhpInterface $instance)
+    public function setFirePhp(FirePhp\FirePhpInterface $instance): static
     {
         $this->firephp = $instance;
 

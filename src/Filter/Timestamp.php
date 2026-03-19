@@ -28,17 +28,17 @@ class Timestamp implements FilterInterface
      *
      * @var int|DateTime
      */
-    protected $value;
+    protected int|Traversable|DateTime $value;
 
     /**
      * PHP idate()-compliant format character.
      *
      * @var string|null
      */
-    protected $dateFormatChar;
+    protected ?string $dateFormatChar;
 
     /** @var string */
-    protected $operator;
+    protected mixed $operator;
 
     /**
      * @param int|DateTime|array|Traversable $value DateTime instance or desired value based on $dateFormatChar
@@ -99,9 +99,8 @@ class Timestamp implements FilterInterface
      * Returns TRUE if timestamp is accepted, otherwise FALSE is returned.
      *
      * @param array $event event data
-     * @return bool
      */
-    public function filter(array $event)
+    public function filter(array $event): bool
     {
         if (! isset($event['timestamp'])) {
             return false;

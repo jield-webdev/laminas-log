@@ -34,26 +34,6 @@ class LoggerAbstractServiceFactoryTest extends TestCase
     protected $serviceManager;
 
     /**
-     * Set up LoggerAbstractServiceFactory and loggers configuration.
-     */
-    protected function setUp(): void
-    {
-        $this->serviceManager = new ServiceManager();
-        $config               = new Config([
-            'abstract_factories' => [LoggerAbstractServiceFactory::class],
-            'services'           => [
-                'config' => [
-                    'log' => [
-                        'Application\Frontend' => [],
-                        'Application\Backend'  => [],
-                    ],
-                ],
-            ],
-        ]);
-        $config->configureServiceManager($this->serviceManager);
-    }
-
-    /**
      * @return array
      */
     public function providerValidLoggerService()
@@ -320,5 +300,25 @@ class LoggerAbstractServiceFactoryTest extends TestCase
         $this->assertEquals(1, count($logProcessors));
         $processor = $logProcessors->current();
         $this->assertSame($mockProcessor, $processor);
+    }
+
+    /**
+     * Set up LoggerAbstractServiceFactory and loggers configuration.
+     */
+    protected function setUp(): void
+    {
+        $this->serviceManager = new ServiceManager();
+        $config               = new Config([
+            'abstract_factories' => [LoggerAbstractServiceFactory::class],
+            'services'           => [
+                'config' => [
+                    'log' => [
+                        'Application\Frontend' => [],
+                        'Application\Backend'  => [],
+                    ],
+                ],
+            ],
+        ]);
+        $config->configureServiceManager($this->serviceManager);
     }
 }

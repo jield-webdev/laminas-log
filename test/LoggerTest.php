@@ -21,7 +21,6 @@ use Laminas\Stdlib\SplPriorityQueue;
 use Laminas\Validator\Digits as DigitsFilter;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-
 use function class_exists;
 use function count;
 use function fclose;
@@ -30,7 +29,6 @@ use function register_shutdown_function;
 use function rewind;
 use function set_exception_handler;
 use function stream_get_contents;
-
 use const E_USER_NOTICE;
 use const PHP_VERSION_ID;
 
@@ -38,9 +36,25 @@ class LoggerTest extends TestCase
 {
     private Logger $logger;
 
-    protected function setUp(): void
+    public static function provideAttributes()
     {
-        $this->logger = new Logger();
+        return [
+            [[]],
+            [['user' => 'foo', 'ip' => '127.0.0.1']],
+            [new ArrayObject(['id' => 42])],
+        ];
+    }
+
+    public static function provideInvalidArguments()
+    {
+        return [
+            [new stdClass(), ['valid']],
+            ['valid', null],
+            ['valid', true],
+            ['valid', 10],
+            ['valid', 'invalid'],
+            ['valid', new stdClass()],
+        ];
     }
 
     public function testUsesWriterPluginManagerByDefault(): void
@@ -191,15 +205,6 @@ class LoggerTest extends TestCase
         $this->assertStringContainsString('123', $writer->events[0]['message']);
     }
 
-    public static function provideAttributes()
-    {
-        return [
-            [[]],
-            [['user' => 'foo', 'ip' => '127.0.0.1']],
-            [new ArrayObject(['id' => 42])],
-        ];
-    }
-
     /**
      * @dataProvider provideAttributes
      */
@@ -212,18 +217,6 @@ class LoggerTest extends TestCase
         $this->assertEquals(count($writer->events), 1);
         $this->assertIsArray($writer->events[0]['extra']);
         $this->assertEquals(count($writer->events[0]['extra']), count($extra));
-    }
-
-    public static function provideInvalidArguments()
-    {
-        return [
-            [new stdClass(), ['valid']],
-            ['valid', null],
-            ['valid', true],
-            ['valid', 10],
-            ['valid', 'invalid'],
-            ['valid', new stdClass()],
-        ];
     }
 
     /**
@@ -372,8 +365,8 @@ class LoggerTest extends TestCase
 
         // check logged messages
         $expectedEvents = [
-            ['priority' => Logger::ERR,    'message' => 'previos',     'file' => __FILE__],
-            ['priority' => Logger::ERR,    'message' => 'error',       'file' => __FILE__],
+            ['priority' => Logger::ERR, 'message' => 'previos', 'file' => __FILE__],
+            ['priority' => Logger::ERR, 'message' => 'error', 'file' => __FILE__],
             ['priority' => Logger::NOTICE, 'message' => 'user notice', 'file' => __FILE__],
         ];
         for ($i = 0; $i < count($expectedEvents); $i++) {
@@ -494,5 +487,10 @@ class LoggerTest extends TestCase
         $writer = new MockWriter();
         $this->logger->addWriter($writer);
         $this->logger->log(-1, 'Foo');
+    }
+
+    protected function setUp(): void
+    {
+        $this->logger = new Logger();
     }
 }

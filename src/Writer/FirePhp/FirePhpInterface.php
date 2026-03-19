@@ -8,31 +8,32 @@ interface FirePhpInterface
 {
     /**
      * Determine whether or not FirePHP is enabled
-     *
-     * @return bool
      */
-    public function getEnabled();
+    public function getEnabled(): bool;
 
     /**
      * Log an error message
      *
      * @param string $line
+     * @param string|null $label
      */
-    public function error($line);
+    public function error($line, $label = null);
 
     /**
      * Log a warning
      *
      * @param string $line
+     * @param string|null $label
      */
-    public function warn($line);
+    public function warn($line, $label = null);
 
     /**
      * Log informational message
      *
      * @param string $line
+     * @param string|null $label
      */
-    public function info($line);
+    public function info($line, $label = null);
 
     /**
      * Log a trace
@@ -45,6 +46,7 @@ interface FirePhpInterface
      * Log a message
      *
      * @param string $line
+     * @param string|null $label
      */
-    public function log($line);
+    public function log($line, $label = null);
 }

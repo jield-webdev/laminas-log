@@ -20,14 +20,12 @@ interface FormatterInterface
      * @return string|array Either a formatted line to write to the log, or the
      *     updated event information to provide to the writer.
      */
-    public function format($event);
+    public function format($event): array|string;
 
     /**
      * Get the format specifier for DateTime objects
-     *
-     * @return string
      */
-    public function getDateTimeFormat();
+    public function getDateTimeFormat(): string;
 
     /**
      * Set the format specifier for DateTime objects
@@ -35,7 +33,6 @@ interface FormatterInterface
      * @see http://php.net/manual/en/function.date.php
      *
      * @param string $dateTimeFormat DateTime format
-     * @return FormatterInterface
      */
-    public function setDateTimeFormat($dateTimeFormat);
+    public function setDateTimeFormat($dateTimeFormat): FormatterInterface;
 }

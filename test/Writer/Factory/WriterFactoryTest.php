@@ -17,13 +17,6 @@ class WriterFactoryTest extends TestCase
 {
     use ProphecyTrait;
 
-    protected function createServiceManagerMock()
-    {
-        $container = $this->prophesize(ServiceLocatorInterface::class);
-        $container->willImplement(ContainerInterface::class);
-        return $container;
-    }
-
     /**
      * @covers \Laminas\Log\Writer\Factory\WriterFactory::setCreationOptions
      */
@@ -70,6 +63,13 @@ class WriterFactoryTest extends TestCase
         // Assert
         $this->assertInstanceOf(InvokableObject::class, $object);
         $this->assertEquals([], $object->options);
+    }
+
+    protected function createServiceManagerMock()
+    {
+        $container = $this->prophesize(ServiceLocatorInterface::class);
+        $container->willImplement(ContainerInterface::class);
+        return $container;
     }
 
     /**
