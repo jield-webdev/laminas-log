@@ -79,13 +79,11 @@
       "@cs-check",
       "@test"
     ],
+    "php-lint": "./vendor/bin/parallel-lint src",
     "cs-check": "phpcs",
     "cs-fix": "phpcbf",
     "test": "phpunit --colors=always",
     "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
     "phpstan": "./vendor/bin/phpstan --memory-limit=2G"
-  },
-  "conflict": {
-    "zendframework/zend-log": "*"
   }
 }

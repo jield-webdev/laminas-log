@@ -17,7 +17,7 @@ use Psr\Container\NotFoundExceptionInterface;
 class LoggerAbstractServiceFactory extends LoggerServiceFactory implements AbstractFactoryInterface
 {
     /** @var array */
-    protected array $config;
+    protected array $config = [];
 
     public function __construct(protected string $configKey = 'log')
     {
@@ -48,7 +48,7 @@ class LoggerAbstractServiceFactory extends LoggerServiceFactory implements Abstr
      */
     protected function getConfig(ContainerInterface $services): array
     {
-        if ($this->config !== null) {
+        if (!empty($this->config)) {
             return $this->config;
         }
 
@@ -74,7 +74,7 @@ class LoggerAbstractServiceFactory extends LoggerServiceFactory implements Abstr
      * {@inheritdoc}
      */
     #[\Override]
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): Logger|object
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): Logger
     {
         $config = $this->getConfig($container);
         $config = $config[$requestedName];
